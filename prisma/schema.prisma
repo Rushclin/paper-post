@@ -1,0 +1,303 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ================================
+// MODÈLES D'AUTHENTIFICATION
+// ================================
+
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  password          String
+  firstName         String
+  lastName          String
+  title             String?  // Dr., Prof., etc.
+  affiliation       String?  // Institution/University
+  department        String?
+  bio               String?
+  orcid             String?  @unique // ORCID identifier
+  // researchInterests String[] // Domaines de recherche
+  role              UserRole @default(AUTHOR)
+  isVerified        Boolean  @default(false)
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  articles          Article[]           @relation("AuthorArticles")
+  coAuthorships     ArticleAuthor[]
+  reviews           Review[]
+  editorAssignments EditorAssignment[]
+  submissions       Submission[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  AUTHOR
+  REVIEWER
+  EDITOR
+  ADMIN
+}
+
+// ================================
+// MODÈLES POUR ARTICLES SCIENTIFIQUES
+// ================================
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  slug        String    @unique
+  parentId    String?
+  parent      Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+  articles    Article[]
+  createdAt   DateTime  @default(now())
+
+  @@map("categories")
+}
+
+model Journal {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  issn        String?  @unique
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  issues      Issue[]
+  articles    Article[]
+
+  @@map("journals")
+}
+
+model Issue {
+  id          String   @id @default(cuid())
+  volume      Int
+  number      Int
+  year        Int
+  title       String?
+  description String?
+  publishedAt DateTime?
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  journalId   String
+  journal     Journal   @relation(fields: [journalId], references: [id], onDelete: Cascade)
+  articles    Article[]
+
+  @@unique([journalId, volume, number])
+  @@map("issues")
+}
+
+model Article {
+  id           String        @id @default(cuid())
+  title        String
+  abstract     String
+  content      String?       // Contenu complet ou lien vers fichier
+  // keywords     String[]      // Mots-clés
+  doi          String?       @unique
+  pages        String?       // ex: "123-145"
+  language     String        @default("fr")
+  manuscriptUrl String?      // URL du fichier manuscrit
+  supplementaryFiles Json?   // Fichiers supplémentaires
+  status       ArticleStatus @default(DRAFT)
+  submittedAt  DateTime?
+  publishedAt  DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  // Relations
+  authorId     String        // Auteur principal
+  author       User          @relation("AuthorArticles", fields: [authorId], references: [id])
+  coAuthors    ArticleAuthor[] // Co-auteurs
+  categoryId   String
+  category     Category      @relation(fields: [categoryId], references: [id])
+  journalId    String?
+  journal      Journal?      @relation(fields: [journalId], references: [id])
+  issueId      String?
+  issue        Issue?        @relation(fields: [issueId], references: [id])
+  submissions  Submission[]
+  reviews      Review[]
+
+  @@map("articles")
+}
+
+enum ArticleStatus {
+  DRAFT          // Brouillon
+  SUBMITTED      // Soumis
+  UNDER_REVIEW   // En cours d'évaluation
+  REVISION_REQUIRED // Révision demandée
+  ACCEPTED       // Accepté
+  REJECTED       // Rejeté
+  PUBLISHED      // Publié
+  WITHDRAWN      // Retiré
+}
+
+model ArticleAuthor {
+  id        String @id @default(cuid())
+  order     Int    // Ordre des auteurs
+  isCorresponding Boolean @default(false) // Auteur correspondant
+
+  // Relations
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User    @relation(fields: [authorId], references: [id])
+
+  @@unique([articleId, authorId])
+  @@map("article_authors")
+}
+
+// ================================
+// MODÈLES POUR PEER REVIEW
+// ================================
+
+model Submission {
+  id          String           @id @default(cuid())
+  coverLetter String?          // Lettre d'accompagnement
+  ethicsStatement String?      // Déclaration d'éthique
+  conflictOfInterest String?   // Déclaration de conflit d'intérêts
+  status      SubmissionStatus @default(PENDING)
+  submittedAt DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  // Relations
+  articleId   String
+  article     Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  submitterId String
+  submitter   User    @relation(fields: [submitterId], references: [id])
+  editorAssignments EditorAssignment[]
+  reviews     Review[]
+
+  @@map("submissions")
+}
+
+enum SubmissionStatus {
+  PENDING        // En attente
+  ASSIGNED       // Assigné à un éditeur
+  REVIEWING      // En cours d'évaluation
+  DECISION_MADE  // Décision prise
+  COMPLETED      // Terminé
+}
+
+model EditorAssignment {
+  id           String   @id @default(cuid())
+  assignedAt   DateTime @default(now())
+  isActive     Boolean  @default(true)
+
+  // Relations
+  submissionId String
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  editorId     String
+  editor       User       @relation(fields: [editorId], references: [id])
+
+  @@unique([submissionId, editorId])
+  @@map("editor_assignments")
+}
+
+model Review {
+  id             String       @id @default(cuid())
+  recommendation ReviewDecision
+  comments       String?      // Commentaires pour l'auteur
+  confidentialComments String? // Commentaires confidentiels pour l'éditeur
+  technicalQuality Int        @default(1) // 1-5
+  novelty        Int          @default(1) // 1-5
+  significance   Int          @default(1) // 1-5
+  clarity        Int          @default(1) // 1-5
+  overallScore   Int          @default(1) // 1-5
+  isCompleted    Boolean      @default(false)
+  submittedAt    DateTime?
+  dueDate        DateTime?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  // Relations
+  submissionId   String
+  submission     Submission   @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  articleId      String
+  article        Article      @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  reviewerId     String
+  reviewer       User         @relation(fields: [reviewerId], references: [id])
+
+  @@unique([submissionId, reviewerId])
+  @@map("reviews")
+}
+
+enum ReviewDecision {
+  ACCEPT           // Accepter
+  MINOR_REVISION   // Révision mineure
+  MAJOR_REVISION   // Révision majeure
+  REJECT           // Rejeter
+}
+
+// ================================
+// MODÈLES POUR FICHIERS ET MÉTADONNÉES
+// ================================
+
+model File {
+  id          String   @id @default(cuid())
+  filename    String
+  originalName String
+  mimeType    String
+  size        Int      // Taille en bytes
+  path        String   // Chemin de stockage
+  description String?
+  fileType    FileType
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("files")
+}
+
+enum FileType {
+  MANUSCRIPT     // Manuscrit principal
+  SUPPLEMENTARY  // Fichier supplémentaire
+  COVER_LETTER   // Lettre d'accompagnement
+  REVIEW_FILE    // Fichier de review
+  FINAL_VERSION  // Version finale
+}
+
+// ================================
+// MODÈLES POUR CONFIGURATION
+// ================================
+
+model Setting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+  description String?
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+model EmailTemplate {
+  id      String @id @default(cuid())
+  name    String @unique
+  subject String
+  body    String
+  variables Json? // Variables disponibles dans le template
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("email_templates")
+}

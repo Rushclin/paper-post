@@ -37,7 +37,7 @@ const Header: React.FC = () => {
                             </li>
                         ))}
                         <li>
-                            <Link href="#cta" className="text-black bg-blue-200 hover:bg-blue-400 px-8 py-3 rounded-full transition-colors">
+                            <Link href="/signin" className="text-black bg-blue-200 hover:bg-blue-400 px-8 py-3 rounded-full transition-colors">
                                 Se connecter
                             </Link>
                         </li>
