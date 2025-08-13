@@ -1,4 +1,3 @@
-// components/auth/ProtectedRoute.tsx
 'use client'
 
 import { useRouter } from 'next/navigation'
@@ -15,7 +14,7 @@ interface ProtectedRouteProps {
 export default function ProtectedRoute({ 
   children, 
   allowedRoles = [], 
-  redirectTo = '/login' 
+  redirectTo = '/' 
 }: ProtectedRouteProps) {
   const { user, loading, isAuthenticated } = useAuth()
   const router = useRouter()

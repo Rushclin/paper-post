@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Manrope, Source_Sans_3 } from "next/font/google";
 import "./../globals.css";
 import { siteDate } from "@/src/data/app";
-import Header from "@/src/components/public/Header";
+import ProtectedRoute from "@/src/components/auth/ProtectedRoute";
+import { UserRole } from "@prisma/client";
 
 const manrope = Manrope({ subsets: ["latin"] });
 const sourceSans = Source_Sans_3({ subsets: ["latin"] });
@@ -41,10 +42,16 @@ export default function DashboardLayout({
       <body
         className={`${manrope.className} ${sourceSans.className} antialiased`}
       >
-        <Header />
-        <section className="relative flex items-center justify-center pb-0 pt-32 md:pt-40 px-5">
+        <ProtectedRoute
+          allowedRoles={[
+            UserRole.AUTHOR,
+            UserRole.REVIEWER,
+            UserRole.EDITOR,
+            UserRole.ADMIN,
+          ]}
+        >
           {children}
-        </section>
+        </ProtectedRoute>
       </body>
     </html>
   );
