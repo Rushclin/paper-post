@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import { Manrope, Source_Sans_3 } from "next/font/google";
-import "./globals.css";
-import { siteDate } from "../data/app";
-import Header from "../components/public/Header";
-import Footer from "../components/public/Footer";
+import "./../globals.css";
+import { siteDate } from "@/src/data/app";
+import Header from "@/src/components/public/Header";
 
 const manrope = Manrope({ subsets: ["latin"] });
 const sourceSans = Source_Sans_3({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: siteDate.metadata.title,
+  title: `Dashboard - ${siteDate.metadata.title}`,
   description: siteDate.metadata.description,
   openGraph: {
     title: siteDate.metadata.title,
@@ -32,7 +31,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -43,8 +42,9 @@ export default function RootLayout({
         className={`${manrope.className} ${sourceSans.className} antialiased`}
       >
         <Header />
-        {children}
-        <Footer />
+        <section className="relative flex items-center justify-center pb-0 pt-32 md:pt-40 px-5">
+          {children}
+        </section>
       </body>
     </html>
   );
