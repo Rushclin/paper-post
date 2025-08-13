@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { HomeIcon, LogOut, Truck, User } from "lucide-react";
+import { HomeIcon, LogOut, Paperclip, Truck, User } from "lucide-react";
 import Link from "next/link";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "@/src/hooks/useAuth";
@@ -156,10 +156,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
             Icon={Truck}
           />
           <SidebarItem
-            active={pathname.startsWith("/article")}
-            route="/article"
-            name="Article"
-            Icon={Truck}
+            active={pathname.startsWith("/publications")}
+            route="/publications"
+            name="Publications"
+            Icon={Paperclip}
           />
         </div>
       </div>

@@ -12,5 +12,5 @@ export const menuItems: IMenuItem[] = [
     {
         text: "Auteurs",
         url: "/auteurs"
-    }
+    },
 ];

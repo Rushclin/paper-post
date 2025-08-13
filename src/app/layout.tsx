@@ -1,3 +1,4 @@
+import { ToastProvider } from "../components/common/ToastContainer";
 import { siteDate } from "../data/app";
 import { AuthProvider } from "../hooks/useAuth";
 import "./globals.css";
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <ToastProvider>{children}</ToastProvider>
+        </AuthProvider>
       </body>
     </html>
   );
