@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { HomeIcon, LogOut, Paperclip, Truck, User } from "lucide-react";
+import { Book, HomeIcon, LogOut, Paperclip, Truck, User } from "lucide-react";
 import Link from "next/link";
 import { twMerge } from "tailwind-merge";
 import { useAuth } from "@/src/hooks/useAuth";
@@ -103,31 +103,17 @@ export const MobileBar: React.FC<MobileBarProps> = ({ className }) => {
     >
       <>
         <MobileItem
-          active={pathname.startsWith("/deliveries")}
-          route="/deliveries"
-          name="Talalalala"
-          Icon={Truck}
+          active={pathname.startsWith("/publications")}
+            route="/publications"
+            name="Publications"
+            Icon={Paperclip}
         />
         <MobileItem
-          active={pathname.startsWith("/account")}
-          route="/account"
-          name="Jslsls"
-          Icon={User}
-        />
-        <MobileItem
-          active={pathname.startsWith("/logout")}
-          route="/logout"
-          Icon={LogOut}
-          name="kskks"
-        />
-
-        <MobileItem
-          active={pathname.startsWith("/dashboard")}
-          route="/dashboard"
+          active={pathname.startsWith("/submissions")}
+          route="/submissions"
           Icon={HomeIcon}
-          name="kskskskssksk"
+          name="Submissions"
         />
-        {/* Autres items similaires */}
       </>
     </div>
   );
@@ -150,16 +136,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
       <div className="overflow-auto px-2 md:px-4 xl:px-6">
         <div className="items mt-10 space-y-5">
           <SidebarItem
-            active={pathname.startsWith("/dashboard")}
-            route="/dashboard"
-            name="Dashboard"
-            Icon={Truck}
-          />
-          <SidebarItem
             active={pathname.startsWith("/publications")}
             route="/publications"
             name="Publications"
             Icon={Paperclip}
+          />
+          <SidebarItem
+          active={pathname.startsWith("/submissions")}
+          route="/submissions"
+          name="Submissions"
+          Icon={Book}
           />
         </div>
       </div>

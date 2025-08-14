@@ -40,7 +40,7 @@ export default function LoginForm() {
         }
         
         // Rediriger vers le dashboard
-        router.push('/dashboard')
+        router.push('/publications')
       } else {
         setError(data.message)
         if ('needsVerification' in data) {

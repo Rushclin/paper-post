@@ -1,194 +1,210 @@
 // app/(dashboard)/publications/page.tsx
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import Link from 'next/link'
-import { useSearchParams, useRouter } from 'next/navigation'
-import { ArticleStatus } from '@prisma/client'
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
+import { ArticleStatus } from "@prisma/client";
+import { Plus } from "lucide-react";
 
 interface Article {
-  id: string
-  title: string
-  abstract: string
-  status: ArticleStatus
-  createdAt: string
-  updatedAt: string
-  submittedAt?: string
-  publishedAt?: string
-  keywords: string[]
+  id: string;
+  title: string;
+  abstract: string;
+  status: ArticleStatus;
+  createdAt: string;
+  updatedAt: string;
+  submittedAt?: string;
+  publishedAt?: string;
+  keywords: string[];
   category: {
-    id: string
-    name: string
-    slug: string
-  }
+    id: string;
+    name: string;
+    slug: string;
+  };
   coAuthors: {
-    id: string
-    order: number
+    id: string;
+    order: number;
     author: {
-      id: string
-      firstName: string
-      lastName: string
-      email: string
-    }
-  }[]
+      id: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+  }[];
   _count: {
-    reviews: number
-    submissions: number
-  }
+    reviews: number;
+    submissions: number;
+  };
 }
 
 interface ArticlesResponse {
-  success: boolean
-  articles: Article[]
+  success: boolean;
+  articles: Article[];
   pagination: {
-    page: number
-    limit: number
-    total: number
-    pages: number
-  }
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
 }
 
 function ArticlesListContent() {
-  const [articles, setArticles] = useState<Article[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
     total: 0,
-    pages: 0
-  })
-  
-  const searchParams = useSearchParams()
-  const router = useRouter()
-  
-  const [filters, setFilters] = useState({
-    status: searchParams.get('status') || '',
-    search: searchParams.get('search') || '',
-    category: searchParams.get('category') || ''
-  })
+    pages: 0,
+  });
 
-  const [categories, setCategories] = useState<any[]>([])
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const [filters, setFilters] = useState({
+    status: searchParams.get("status") || "",
+    search: searchParams.get("search") || "",
+    category: searchParams.get("category") || "",
+  });
+
+  const [categories, setCategories] = useState<any[]>([]);
 
   // Charger les catégories
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('/api/categories')
-        const data = await response.json()
+        const response = await fetch("/api/categories");
+        const data = await response.json();
         if (data.success) {
-          setCategories(data.categories)
+          setCategories(data.categories);
         }
       } catch (error) {
-        console.error('Error fetching categories:', error)
+        console.error("Error fetching categories:", error);
       }
-    }
-    fetchCategories()
-  }, [])
+    };
+    fetchCategories();
+  }, []);
 
   // Charger les articles
   useEffect(() => {
-    fetchArticles()
-  }, [searchParams])
+    fetchArticles();
+  }, [searchParams]);
 
   const fetchArticles = async () => {
-    setLoading(true)
-    setError('')
+    setLoading(true);
+    setError("");
 
     try {
-      const params = new URLSearchParams()
-      params.set('page', searchParams.get('page') || '1')
-      params.set('limit', '10')
-      
-      if (filters.status) params.set('status', filters.status)
-      if (filters.search) params.set('search', filters.search)
-      if (filters.category) params.set('category', filters.category)
+      const params = new URLSearchParams();
+      params.set("page", searchParams.get("page") || "1");
+      params.set("limit", "10");
 
-      const token = localStorage.getItem('auth-token')
+      if (filters.status) params.set("status", filters.status);
+      if (filters.search) params.set("search", filters.search);
+      if (filters.category) params.set("category", filters.category);
+
+      const token = localStorage.getItem("auth-token");
       const response = await fetch(`/api/articles?${params.toString()}`, {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      const data: ArticlesResponse = await response.json()
+      const data: ArticlesResponse = await response.json();
 
       if (data.success) {
-        setArticles(data.articles)
-        setPagination(data.pagination)
+        setArticles(data.articles);
+        setPagination(data.pagination);
       } else {
-        setError('Erreur lors du chargement des articles')
+        setError("Erreur lors du chargement des articles");
       }
     } catch (error) {
-      setError('Erreur de connexion')
+      setError("Erreur de connexion");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleFilterChange = (key: string, value: string) => {
-    const newFilters = { ...filters, [key]: value }
-    setFilters(newFilters)
-    
-    const params = new URLSearchParams()
-    params.set('page', '1') // Reset to first page
-    
-    if (newFilters.status) params.set('status', newFilters.status)
-    if (newFilters.search) params.set('search', newFilters.search)
-    if (newFilters.category) params.set('category', newFilters.category)
+    const newFilters = { ...filters, [key]: value };
+    setFilters(newFilters);
 
-    router.push(`/publications?${params.toString()}`)
-  }
+    const params = new URLSearchParams();
+    params.set("page", "1"); // Reset to first page
 
-  const handleDeleteArticle = async (articleId: string, articleTitle: string) => {
-    if (!confirm(`Êtes-vous sûr de vouloir supprimer l'article "${articleTitle}" ?`)) {
-      return
+    if (newFilters.status) params.set("status", newFilters.status);
+    if (newFilters.search) params.set("search", newFilters.search);
+    if (newFilters.category) params.set("category", newFilters.category);
+
+    router.push(`/publications?${params.toString()}`);
+  };
+
+  const handleDeleteArticle = async (
+    articleId: string,
+    articleTitle: string
+  ) => {
+    if (
+      !confirm(
+        `Êtes-vous sûr de vouloir supprimer l'article "${articleTitle}" ?`
+      )
+    ) {
+      return;
     }
 
     try {
-      const token = localStorage.getItem('auth-token')
+      const token = localStorage.getItem("auth-token");
       const response = await fetch(`/api/articles/${articleId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      })
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (data.success) {
-        setArticles(articles.filter(a => a.id !== articleId))
-        alert('Article supprimé avec succès')
+        setArticles(articles.filter((a) => a.id !== articleId));
+        alert("Article supprimé avec succès");
       } else {
-        alert(data.message || 'Erreur lors de la suppression')
+        alert(data.message || "Erreur lors de la suppression");
       }
     } catch (error) {
-      alert('Erreur de connexion')
+      alert("Erreur de connexion");
     }
-  }
+  };
 
   const getStatusBadge = (status: ArticleStatus) => {
     const statusConfig = {
-      DRAFT: { label: 'Brouillon', color: 'bg-gray-100 text-gray-800' },
-      SUBMITTED: { label: 'Soumis', color: 'bg-blue-100 text-blue-800' },
-      UNDER_REVIEW: { label: 'En évaluation', color: 'bg-yellow-100 text-yellow-800' },
-      REVISION_REQUIRED: { label: 'Révision requise', color: 'bg-orange-100 text-orange-800' },
-      ACCEPTED: { label: 'Accepté', color: 'bg-green-100 text-green-800' },
-      REJECTED: { label: 'Rejeté', color: 'bg-red-100 text-red-800' },
-      PUBLISHED: { label: 'Publié', color: 'bg-purple-100 text-purple-800' },
-      WITHDRAWN: { label: 'Retiré', color: 'bg-gray-100 text-gray-800' }
-    }
+      DRAFT: { label: "Brouillon", color: "bg-gray-100 text-gray-800" },
+      SUBMITTED: { label: "Soumis", color: "bg-blue-100 text-blue-800" },
+      UNDER_REVIEW: {
+        label: "En évaluation",
+        color: "bg-yellow-100 text-yellow-800",
+      },
+      REVISION_REQUIRED: {
+        label: "Révision requise",
+        color: "bg-orange-100 text-orange-800",
+      },
+      ACCEPTED: { label: "Accepté", color: "bg-green-100 text-green-800" },
+      REJECTED: { label: "Rejeté", color: "bg-red-100 text-red-800" },
+      PUBLISHED: { label: "Publié", color: "bg-purple-100 text-purple-800" },
+      WITHDRAWN: { label: "Retiré", color: "bg-gray-100 text-gray-800" },
+    };
 
-    const config = statusConfig[status] || statusConfig.DRAFT
+    const config = statusConfig[status] || statusConfig.DRAFT;
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
+      <span
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}
+      >
         {config.label}
       </span>
-    )
-  }
+    );
+  };
 
   const getActionButtons = (article: Article) => {
-    const buttons = []
+    const buttons = [];
 
     // Voir l'article
     buttons.push(
@@ -199,10 +215,10 @@ function ArticlesListContent() {
       >
         Voir
       </Link>
-    )
+    );
 
     // Modifier (seulement brouillons et révisions requises)
-    if (['DRAFT', 'REVISION_REQUIRED'].includes(article.status)) {
+    if (["DRAFT", "REVISION_REQUIRED"].includes(article.status)) {
       buttons.push(
         <Link
           key="edit"
@@ -211,11 +227,11 @@ function ArticlesListContent() {
         >
           Modifier
         </Link>
-      )
+      );
     }
 
     // Supprimer (seulement brouillons)
-    if (article.status === 'DRAFT') {
+    if (article.status === "DRAFT") {
       buttons.push(
         <button
           key="delete"
@@ -224,11 +240,11 @@ function ArticlesListContent() {
         >
           Supprimer
         </button>
-      )
+      );
     }
 
     // Soumettre (brouillons et révisions)
-    if (['DRAFT', 'REVISION_REQUIRED'].includes(article.status)) {
+    if (["DRAFT", "REVISION_REQUIRED"].includes(article.status)) {
       buttons.push(
         <Link
           key="submit"
@@ -237,11 +253,11 @@ function ArticlesListContent() {
         >
           Soumettre
         </Link>
-      )
+      );
     }
 
-    return buttons
-  }
+    return buttons;
+  };
 
   if (loading) {
     return (
@@ -249,7 +265,7 @@ function ArticlesListContent() {
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         <span className="ml-2 text-gray-600">Chargement...</span>
       </div>
-    )
+    );
   }
 
   return (
@@ -258,13 +274,15 @@ function ArticlesListContent() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Mes publications</h1>
-          <p className="text-gray-600">Gérez vos articles et publications scientifiques</p>
+          <p className="text-gray-600">
+            Gérez vos articles et publications scientifiques
+          </p>
         </div>
         <Link
           href="/publications/new"
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+          className="px-4 py-2 rounded-full border transition-colors flex items-center text-base"
         >
-          <span className="mr-2">➕</span>
+          <Plus className="w-4 h-4 mr-3" />
           Nouvelle publication
         </Link>
       </div>
@@ -280,7 +298,7 @@ function ArticlesListContent() {
               type="text"
               placeholder="Titre, résumé, mots-clés..."
               value={filters.search}
-              onChange={(e) => handleFilterChange('search', e.target.value)}
+              onChange={(e) => handleFilterChange("search", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
@@ -291,7 +309,7 @@ function ArticlesListContent() {
             </label>
             <select
               value={filters.status}
-              onChange={(e) => handleFilterChange('status', e.target.value)}
+              onChange={(e) => handleFilterChange("status", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Tous les statuts</option>
@@ -311,7 +329,7 @@ function ArticlesListContent() {
             </label>
             <select
               value={filters.category}
-              onChange={(e) => handleFilterChange('category', e.target.value)}
+              onChange={(e) => handleFilterChange("category", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Toutes les catégories</option>
@@ -389,14 +407,16 @@ function ArticlesListContent() {
                         </div>
                         {(article.keywords || []).length > 0 && (
                           <div className="mt-1">
-                            {article.keywords.slice(0, 3).map((keyword, index) => (
-                              <span
-                                key={index}
-                                className="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded mr-1 mb-1"
-                              >
-                                {keyword}
-                              </span>
-                            ))}
+                            {article.keywords
+                              .slice(0, 3)
+                              .map((keyword, index) => (
+                                <span
+                                  key={index}
+                                  className="inline-block bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded mr-1 mb-1"
+                                >
+                                  {keyword}
+                                </span>
+                              ))}
                             {article.keywords.length > 3 && (
                               <span className="text-xs text-gray-500">
                                 +{article.keywords.length - 3} autres
@@ -420,7 +440,8 @@ function ArticlesListContent() {
                           <div>
                             {article.coAuthors.slice(0, 2).map((coAuthor) => (
                               <div key={coAuthor.id} className="text-xs">
-                                {coAuthor.author.firstName} {coAuthor.author.lastName}
+                                {coAuthor.author.firstName}{" "}
+                                {coAuthor.author.lastName}
                               </div>
                             ))}
                             {article.coAuthors.length > 2 && (
@@ -433,7 +454,7 @@ function ArticlesListContent() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(article.updatedAt).toLocaleDateString('fr-FR')}
+                      {new Date(article.updatedAt).toLocaleDateString("fr-FR")}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                       <div className="flex space-x-2 justify-end">
@@ -456,9 +477,11 @@ function ArticlesListContent() {
                   {pagination.page > 1 && (
                     <button
                       onClick={() => {
-                        const params = new URLSearchParams(searchParams.toString())
-                        params.set('page', (pagination.page - 1).toString())
-                        router.push(`/publications?${params.toString()}`)
+                        const params = new URLSearchParams(
+                          searchParams.toString()
+                        );
+                        params.set("page", (pagination.page - 1).toString());
+                        router.push(`/publications?${params.toString()}`);
                       }}
                       className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                     >
@@ -468,9 +491,11 @@ function ArticlesListContent() {
                   {pagination.page < pagination.pages && (
                     <button
                       onClick={() => {
-                        const params = new URLSearchParams(searchParams.toString())
-                        params.set('page', (pagination.page + 1).toString())
-                        router.push(`/publications?${params.toString()}`)
+                        const params = new URLSearchParams(
+                          searchParams.toString()
+                        );
+                        params.set("page", (pagination.page + 1).toString());
+                        router.push(`/publications?${params.toString()}`);
                       }}
                       className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                     >
@@ -481,29 +506,35 @@ function ArticlesListContent() {
                 <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sm text-gray-700">
-                      Affichage de{' '}
+                      Affichage de{" "}
                       <span className="font-medium">
                         {(pagination.page - 1) * pagination.limit + 1}
-                      </span>{' '}
-                      à{' '}
+                      </span>{" "}
+                      à{" "}
                       <span className="font-medium">
-                        {Math.min(pagination.page * pagination.limit, pagination.total)}
-                      </span>{' '}
-                      sur{' '}
-                      <span className="font-medium">{pagination.total}</span> résultats
+                        {Math.min(
+                          pagination.page * pagination.limit,
+                          pagination.total
+                        )}
+                      </span>{" "}
+                      sur{" "}
+                      <span className="font-medium">{pagination.total}</span>{" "}
+                      résultats
                     </p>
                   </div>
                   <div>
                     <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
                       {/* Pages de pagination */}
                       {Array.from({ length: pagination.pages }, (_, i) => i + 1)
-                        .filter(page => 
-                          page === 1 || 
-                          page === pagination.pages || 
-                          Math.abs(page - pagination.page) <= 2
+                        .filter(
+                          (page) =>
+                            page === 1 ||
+                            page === pagination.pages ||
+                            Math.abs(page - pagination.page) <= 2
                         )
                         .map((page, index, array) => {
-                          const showEllipsis = index > 0 && array[index - 1] !== page - 1
+                          const showEllipsis =
+                            index > 0 && array[index - 1] !== page - 1;
                           return (
                             <div key={page}>
                               {showEllipsis && (
@@ -513,20 +544,24 @@ function ArticlesListContent() {
                               )}
                               <button
                                 onClick={() => {
-                                  const params = new URLSearchParams(searchParams.toString())
-                                  params.set('page', page.toString())
-                                  router.push(`/publications?${params.toString()}`)
+                                  const params = new URLSearchParams(
+                                    searchParams.toString()
+                                  );
+                                  params.set("page", page.toString());
+                                  router.push(
+                                    `/publications?${params.toString()}`
+                                  );
                                 }}
                                 className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                                   page === pagination.page
-                                    ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                                    : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                                    ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
+                                    : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
                                 }`}
                               >
                                 {page}
                               </button>
                             </div>
-                          )
+                          );
                         })}
                     </nav>
                   </div>
@@ -537,11 +572,9 @@ function ArticlesListContent() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export default function ArticlesListPage() {
-  return (
-      <ArticlesListContent />
-  )
+  return <ArticlesListContent />;
 }

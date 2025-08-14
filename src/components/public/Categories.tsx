@@ -1,13 +1,37 @@
+"use client";
+import { useCategories } from "@/src/hooks/useCategories";
 
 const Categories: React.FC = () => {
-    return (
-        <div id="categories">
-            <h2 className="sr-only">Features</h2>
-            {/* {benefits.map((item, index) => {
-                return <BenefitSection key={index} benefit={item} imageAtRight={index % 2 !== 0} />
-            })} */}
-        </div>
-    )
-}
+  const { categories } = useCategories();
 
-export default Categories
+  return (
+    <section id="categories" className="py-12">
+      <div className="max-w-4xl mx-auto text-center px-4">
+        <h2 className="text-3xl font-bold text-gray-800 mb-4">
+          Toutes nos catégories
+        </h2>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          Rejoignez-nous et explorez un large choix de catégories d’articles.
+          Avec plus de{" "}
+          <span className="font-semibold text-primary">
+            {categories?.length || 0}
+          </span>{" "}
+          thèmes, nous avons tout pour nourrir votre apprentissage.
+        </p>
+      </div>
+
+      <div className="mt-10 flex flex-wrap justify-center gap-4 px-4">
+        {(categories || []).map((categorie) => (
+          <div
+            key={categorie.id}
+            className="border border-primary/20 bg-white shadow-sm hover:shadow-md transition rounded-full px-6 py-3 text-sm font-medium text-gray-700  hover:text-slate-500 cursor-pointer"
+          >
+            {categorie.name}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+export default Categories;

@@ -22,6 +22,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({
   hideName = false,
 }) => {
 
+  const {logout} = useAuth()
+
   return (
     <div className="">
       <div className="" />
@@ -49,7 +51,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({
                   />
 
                   <Link
-                    href={`/logout`}
+                    onClick={() => {logout()}}
+                    href="#"
                     className="flex w-full items-center gap-2 rounded-md p-3 hover:bg-red-500 hover:text-white"
                   >
                     <LogOut width={18} /> Se deconnecter
