@@ -362,9 +362,9 @@ function ArticlesListContent() {
           </p>
           <Link
             href="/publications/new"
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center"
+            className="border px-6 py-3 rounded-full inline-flex items-center"
           >
-            <span className="mr-2">➕</span>
+            <Plus className="h-4 w-4 mr-3"/>
             Créer ma première publication
           </Link>
         </div>

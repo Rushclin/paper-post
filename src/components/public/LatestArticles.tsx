@@ -5,6 +5,7 @@ import { usePublicArticles } from "@/src/hooks/usePublicArticles";
 import { usePublicStats } from "@/src/hooks/usePublicStats";
 import Link from "next/link";
 import { Avatar } from "../common/Avatar";
+import { ChevronLeft, ChevronRight, Save, Share2Icon, ShareIcon } from "lucide-react";
 
 const LatestArticles: React.FC = () => {
   const { articles, loading, error } = usePublicArticles({ limit: 5 });
@@ -51,7 +52,7 @@ const LatestArticles: React.FC = () => {
   }
 
   return (
-    <section id="latest-articles" className="py-20 px-5 bg-background">
+    <section id="latest-articles" className="py-20">
       <div className="max-w-7xl mx-auto">
         {/* Header avec statistiques */}
         <div className="text-center mb-16">
@@ -77,12 +78,12 @@ const LatestArticles: React.FC = () => {
               <span className="text-gray-600">auteurs</span>
             </div>
             <div className="w-px h-8 bg-gray-300"></div>
-            <div className="flex items-center space-x-2">
+            {/* <div className="flex items-center space-x-2">
               <span className="text-3xl font-bold text-purple-600">
                 {stats.recentArticles}
               </span>
               <span className="text-gray-600">ce mois-ci</span>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -260,8 +261,7 @@ const LatestArticles: React.FC = () => {
                       </div>
                     )}
 
-                    {/* Actions */}
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="flex-col md:flex-row items-center justify-between pt-4 border-t border-gray-100">
                       <div className="flex items-center space-x-6 text-sm text-gray-500">
                         <div className="flex items-center space-x-1">
                           <span>👁️</span>
@@ -284,36 +284,12 @@ const LatestArticles: React.FC = () => {
                       <div className="flex items-center space-x-3">
                         <button className="text-gray-500 hover:text-blue-600 transition-colors">
                           <span className="sr-only">Sauvegarder</span>
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                            />
-                          </svg>
+                          <Save className="w-4 h-4"/>
                         </button>
 
                         <button className="text-gray-500 hover:text-green-600 transition-colors">
                           <span className="sr-only">Partager</span>
-                          <svg
-                            className="w-5 h-5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
-                            />
-                          </svg>
+                         <Share2Icon className="w-4 h-4"/>
                         </button>
 
                         <Link
@@ -321,19 +297,7 @@ const LatestArticles: React.FC = () => {
                           className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-full border"
                         >
                           Lire l'article
-                          <svg
-                            className="ml-2 w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 5l7 7-7 7"
-                            />
-                          </svg>
+                          <ChevronRight className="w-3 h-3"/>
                         </Link>
                       </div>
                     </div>
