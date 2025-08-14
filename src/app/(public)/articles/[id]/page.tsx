@@ -185,7 +185,7 @@ export default function PublicArticlePage() {
                 {article.category.name}
               </span>
               <span className="text-sm text-gray-500">
-                Publié le {formatDate(article.publishedAt)}
+                Publié le {formatDate(article.createdAt)}
               </span>
             </div>
 
