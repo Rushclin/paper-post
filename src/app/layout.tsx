@@ -1,11 +1,11 @@
 import { ToastProvider } from "../components/common/ToastContainer";
-import { siteDate } from "../data/app";
+import { siteData } from "../data/app";
 import { AuthProvider } from "../hooks/useAuth";
 import "./globals.css";
 
 export const metadata = {
-  title: siteDate.siteName,
-  description: siteDate.metadata.description,
+  title: siteData.siteName,
+  description: siteData.metadata.description,
 };
 
 export default function RootLayout({

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import React from 'react';
 import { FaFingerprint } from 'react-icons/fa';
 
-import { siteDate } from '@/src/data/app';
+import { siteData } from '@/src/data/app';
 import { footerDetails } from '@/src/data/footer';
 import { getPlatformIconByName } from '@/src/utils';
 import { BiBook } from 'react-icons/bi';
@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
                     <Link href="/" className="flex items-center gap-2">
                         <BiBook className="min-w-fit w-5 h-5 md:w-7 md:h-7" />
                         <h3 className="manrope text-xl font-semibold cursor-pointer">
-                            {siteDate.siteName}
+                            {siteData.siteName}
                         </h3>
                     </Link>
                     <p className="mt-3.5 text-foreground-accent">
@@ -59,7 +59,7 @@ const Footer: React.FC = () => {
                 </div>
             </div>
             <div className="mt-8 md:text-center text-foreground-accent px-6">
-                <p className='text-sm mt-2 text-gray-500'>Copyright &copy; {new Date().getFullYear()} {siteDate.siteName}. All rights reserved.</p>
+                <p className='text-sm mt-2 text-gray-500'>Copyright &copy; {new Date().getFullYear()} {siteData.siteName}. All rights reserved.</p>
             </div>
         </footer>
     );

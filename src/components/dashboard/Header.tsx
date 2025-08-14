@@ -7,7 +7,7 @@ import { twMerge } from "tailwind-merge";
 import Link from "next/link";
 import { LogOut } from "lucide-react";
 import { Avatar } from "../common/Avatar";
-import { siteDate } from "@/src/data/app";
+import { siteData } from "@/src/data/app";
 import { User as UserType } from "@prisma/client"; // si tu utilises Prisma pour le type User
 
 interface UserProfileProps {
@@ -87,7 +87,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ title, subtitl
 
       <div className="flex flex-col gap-4 p-7 pt-24 md:flex-row md:items-center md:justify-between md:pb-0 md:pt-4">
         <div className="flex flex-col font-normal">
-          <h3 className="text-md font-medium md:text-2xl">{title || siteDate.siteName}</h3>
+          <h3 className="text-md font-medium md:text-2xl">{title || siteData.siteName}</h3>
         </div>
         <div className="hidden gap-2 md:inline-flex">
           <UserProfile user={user} />

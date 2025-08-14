@@ -1,4 +1,4 @@
-export const siteDate = {
+export const siteData = {
     siteName: "Paper post",
     metadata: {
         title: "Paper Post",
