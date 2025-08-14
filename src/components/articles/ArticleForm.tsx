@@ -3,6 +3,9 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import dynamic from 'next/dynamic';
+
+const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 interface ArticleFormData {
   title: string
@@ -110,7 +113,7 @@ export default function ArticleForm({ initialData, onSubmit, isEditing = false }
   return (
     <div className="space-y-6">
       {/* Navigation des étapes */}
-      <div className="bg-white border rounded-lg p-6">
+      <div className="bg-white border rounded-md p-6">
         <nav aria-label="Progress">
           <ol className="flex items-center">
             {steps.map((step, stepIdx) => (
@@ -148,7 +151,7 @@ export default function ArticleForm({ initialData, onSubmit, isEditing = false }
       </div>
 
       {/* Formulaire */}
-      <div className="bg-white border rounded-lg p-6">
+      <div className="bg-white border rounded-md p-6">
         {/* Étape 1: Informations générales */}
         {currentStep === 1 && (
           <div className="space-y-6">
@@ -165,6 +168,7 @@ export default function ArticleForm({ initialData, onSubmit, isEditing = false }
                 onChange={(e) => handleInputChange('title', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Titre complet et descriptif de votre article"
+                required
               />
               {errors.title && (
                 <p className="mt-1 text-sm text-red-600">{errors.title[0]}</p>
@@ -198,14 +202,19 @@ export default function ArticleForm({ initialData, onSubmit, isEditing = false }
               <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
                 Contenu de l'article *
               </label>
-              <textarea
+              <MDEditor
+            value={formData.content}
+            onChange={(value) => handleInputChange('content', value || "")}
+            height={400}
+          />
+              {/* <textarea
                 id="content"
                 rows={20}
                 value={formData.content}
                 onChange={(e) => handleInputChange('content', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
                 placeholder="Contenu complet de votre article. Vous pouvez utiliser du Markdown pour la mise en forme."
-              />
+              /> */}
               {errors.content && (
                 <p className="mt-1 text-sm text-red-600">{errors.content[0]}</p>
               )}

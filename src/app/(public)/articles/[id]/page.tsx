@@ -5,6 +5,8 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { formatDate, generateCitation } from '@/src/utils/articleHelpers'
 
 interface PublicArticleDetail {
@@ -346,9 +348,14 @@ export default function PublicArticlePage() {
           <section className="mb-8">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Article complet</h2>
             <div className="prose max-w-none">
-              <div className="text-gray-700 leading-relaxed text-justify whitespace-pre-wrap">
+              {/* <div className="text-gray-700 leading-relaxed text-justify whitespace-pre-wrap">
                 {article.content}
-              </div>
+              </div> */}
+              <div className="prose prose-lg max-w-none">
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        {article.content} 
+      </ReactMarkdown>
+    </div>
             </div>
           </section>
 
