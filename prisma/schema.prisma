@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -110,8 +110,8 @@ model Issue {
 model Article {
   id                 String        @id @default(cuid())
   title              String
-  abstract           String        @db.LongText
-  content            String?       @db.LongText
+  abstract           String        @db.Text
+  content            String?       @db.Text
   // keywords     String[]      // Mots-clés
   doi                String?       @unique
   pages              String? // ex: "123-145"
@@ -172,9 +172,9 @@ model ArticleAuthor {
 
 model Submission {
   id                 String           @id @default(cuid())
-  coverLetter        String?          @db.LongText // Lettre d'accompagnement
-  ethicsStatement    String?          @db.LongText // Déclaration d'éthique
-  conflictOfInterest String?          @db.LongText // Déclaration de conflit d'intérêts
+  coverLetter        String?          @db.Text // Lettre d'accompagnement
+  ethicsStatement    String?          @db.Text // Déclaration d'éthique
+  conflictOfInterest String?          @db.Text // Déclaration de conflit d'intérêts
   status             SubmissionStatus @default(PENDING)
   submittedAt        DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
