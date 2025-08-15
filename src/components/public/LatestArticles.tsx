@@ -5,7 +5,7 @@ import { usePublicArticles } from "@/src/hooks/usePublicArticles";
 import { usePublicStats } from "@/src/hooks/usePublicStats";
 import Link from "next/link";
 import { Avatar } from "../common/Avatar";
-import { ChevronLeft, ChevronRight, Save, Share2Icon, ShareIcon } from "lucide-react";
+import { ChevronRight, Save, Share2Icon } from "lucide-react";
 
 const LatestArticles: React.FC = () => {
   const { articles, loading, error } = usePublicArticles({ limit: 5 });
@@ -122,21 +122,14 @@ const LatestArticles: React.FC = () => {
             </p>
           </div>
         ) : (
-          <div className="space-y-8">
+          <div className="space-y-2">
             {articles.map((article, index) => (
               <article
                 key={article.id}
                 className="bg-white rounded-md p-6 border border-gray-100 shadow-2xs"
               >
                 <div className="flex space-x-6">
-                  {/* Contenu principal */}
                   <div className="flex-1 min-w-0">
-                    <div className="pb-4">
-                      <Avatar
-                        name={`${article.author.title} ${article.author.firstName} ${article.author.lastName}`}
-                        tagline={article.author.affiliation}
-                      />
-                    </div>
                     <div className="mb-4">
                       <div className="flex items-start justify-between mb-3">
                         <h3 className="text-xl font-bold text-gray-900 leading-tight">
@@ -155,7 +148,6 @@ const LatestArticles: React.FC = () => {
                         </div>
                       </div>
 
-                      {/* Informations sur les auteurs */}
                       <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
                         <div>
                           <span className="font-medium text-gray-900">
@@ -194,7 +186,6 @@ const LatestArticles: React.FC = () => {
                         )}
                       </div>
 
-                      {/* Métadonnées de publication */}
                       <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
                         <span>📅 {formatDate(article.publishedAt)}</span>
 

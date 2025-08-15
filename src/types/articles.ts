@@ -1,5 +1,5 @@
 // types/articles.ts
-import { ArticleStatus, UserRole } from '@prisma/client'
+import { ArticleStatus } from '@prisma/client'
 
 export interface ArticleFormData {
   title: string
@@ -156,42 +156,3 @@ export interface SubmitArticleRequest {
   ethicsStatement: string
   conflictOfInterest: string
 }
-
-
-
-
-
-// // middleware.ts - Middleware Next.js pour l'authentification
-// import { NextResponse } from 'next/server'
-// import type { NextRequest } from 'next/server'
-
-// export function middleware(request: NextRequest) {
-//   // Vérifier si l'utilisateur accède aux routes protégées
-//   if (request.nextUrl.pathname.startsWith('/dashboard')) {
-//     const token = request.cookies.get('auth-token')?.value || 
-//                   request.headers.get('authorization')?.replace('Bearer ', '')
-
-//     if (!token) {
-//       return NextResponse.redirect(new URL('/login', request.url))
-//     }
-//   }
-
-//   // Rediriger les utilisateurs connectés loin des pages d'auth
-//   if (request.nextUrl.pathname.match('^/(login|register)$')) {
-//     const token = request.cookies.get('auth-token')?.value
-
-//     if (token) {
-//       return NextResponse.redirect(new URL('/dashboard', request.url))
-//     }
-//   }
-
-//   return NextResponse.next()
-// }
-
-// export const config = {
-//   matcher: [
-//     '/dashboard/:path*',
-//     '/login',
-//     '/register'
-//   ]
-// }
