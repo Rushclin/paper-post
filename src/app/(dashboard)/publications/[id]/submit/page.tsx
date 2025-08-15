@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { useSubmissionValidation } from '@/src/hooks/useSubmissionValidation'
 
 interface SubmissionFormData {
   coverLetter: string
@@ -27,7 +28,7 @@ function SubmitArticleContent() {
     conflictOfInterest: ''
   })
 
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const { validateField, validateAll, hasError, getError, clearErrors } = useSubmissionValidation()
 
   useEffect(() => {
     fetchArticle()
@@ -63,30 +64,14 @@ function SubmitArticleContent() {
 
   const handleInputChange = (field: keyof SubmissionFormData, value: string) => {
     setFormData({ ...formData, [field]: value })
-    if (errors[field]) {
-      const newErrors = { ...errors }
-      delete newErrors[field]
-      setErrors(newErrors)
-    }
+    
+    // Validation en temps réel
+    validateField(field, value)
   }
 
   const validateForm = () => {
-    const newErrors: Record<string, string> = {}
-
-    if (formData.coverLetter.length < 100) {
-      newErrors.coverLetter = 'La lettre d\'accompagnement doit contenir au moins 100 caractères'
-    }
-
-    if (formData.ethicsStatement.length < 50) {
-      newErrors.ethicsStatement = 'La déclaration d\'éthique doit contenir au moins 50 caractères'
-    }
-
-    if (formData.conflictOfInterest.length < 20) {
-      newErrors.conflictOfInterest = 'La déclaration de conflit d\'intérêts doit contenir au moins 20 caractères'
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    const validation = validateAll(formData)
+    return validation.isValid
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -186,8 +171,7 @@ function SubmitArticleContent() {
         <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
           <h2 className="font-medium text-blue-900 mb-2">{article.title}</h2>
           <p className="text-sm text-blue-700">
-            Catégorie: {article.category.name} • 
-            Mots-clés: {article.keywords.join(', ')}
+            Catégorie: {article.category.name}
           </p>
         </div>
 
@@ -228,8 +212,8 @@ function SubmitArticleContent() {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             placeholder="Expliquez pourquoi votre article mérite d'être publié dans cette revue, sa contribution originale au domaine, et toute information pertinente pour les éditeurs."
           />
-          {errors.coverLetter && (
-            <p className="mt-1 text-sm text-red-600">{errors.coverLetter}</p>
+          {hasError('coverLetter') && (
+            <p className="mt-1 text-sm text-red-600">{getError('coverLetter')}</p>
           )}
           <p className="mt-1 text-sm text-gray-500">
             {formData.coverLetter.length} caractères (minimum 100)
@@ -248,8 +232,8 @@ function SubmitArticleContent() {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             placeholder="Décrivez les considérations éthiques de votre recherche, l'approbation des comités d'éthique, le consentement des participants, etc."
           />
-          {errors.ethicsStatement && (
-            <p className="mt-1 text-sm text-red-600">{errors.ethicsStatement}</p>
+          {hasError('ethicsStatement') && (
+            <p className="mt-1 text-sm text-red-600">{getError('ethicsStatement')}</p>
           )}
           <p className="mt-1 text-sm text-gray-500">
             {formData.ethicsStatement.length} caractères (minimum 50)
@@ -268,8 +252,8 @@ function SubmitArticleContent() {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             placeholder="Déclarez tout conflit d'intérêts potentiel ou indiquez 'Aucun conflit d'intérêts à déclarer'"
           />
-          {errors.conflictOfInterest && (
-            <p className="mt-1 text-sm text-red-600">{errors.conflictOfInterest}</p>
+          {hasError('conflictOfInterest') && (
+            <p className="mt-1 text-sm text-red-600">{getError('conflictOfInterest')}</p>
           )}
           <p className="mt-1 text-sm text-gray-500">
             {formData.conflictOfInterest.length} caractères (minimum 20)

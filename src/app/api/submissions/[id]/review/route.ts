@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/src/libs/prisma'
 import { authenticate, authorize } from '@/src/libs/middleware'
+import { reviewSchema } from '@/src/libs/validation'
 import { UserRole, ReviewDecision } from '@prisma/client'
 
 // POST /api/submissions/[id]/review - Soumettre une review
@@ -11,6 +12,18 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     authorize([UserRole.ADMIN, UserRole.EDITOR, UserRole.REVIEWER])(user)
 
     const { id } = params
+    const body = await request.json()
+
+    // Validation des données
+    try {
+      reviewSchema.parse(body)
+    } catch (validationError: any) {
+      return NextResponse.json(
+        { success: false, message: 'Données de révision invalides', errors: validationError.errors },
+        { status: 400 }
+      )
+    }
+
     const {
       recommendation,
       comments,
@@ -20,15 +33,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
       significance,
       clarity,
       overallScore
-    } = await request.json()
-
-    // Validation
-    if (!recommendation || !Object.values(ReviewDecision).includes(recommendation)) {
-      return NextResponse.json(
-        { success: false, message: 'Recommandation invalide' },
-        { status: 400 }
-      )
-    }
+    } = body
 
     // Vérifier que la soumission existe
     const submission = await prisma.submission.findUnique({

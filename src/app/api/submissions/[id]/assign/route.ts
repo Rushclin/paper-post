@@ -50,7 +50,7 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     // Mettre à jour le statut de la soumission
     await prisma.submission.update({
       where: { id },
-      data: { status: 'ASSIGNED' }
+      data: { status: 'REVIEWING' }
     })
 
     // Mettre à jour le statut de l'article

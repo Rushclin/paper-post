@@ -74,3 +74,42 @@ export const articleSchema = z.object({
   coverLetter: z.string()
     .min(100, 'La lettre d\'accompagnement doit contenir au moins 100 caractères')
 })
+
+export const submissionSchema = z.object({
+  coverLetter: z.string()
+    .min(100, 'La lettre d\'accompagnement doit contenir au moins 100 caractères')
+    .max(5000, 'La lettre d\'accompagnement ne peut pas dépasser 5000 caractères'),
+  ethicsStatement: z.string()
+    .min(50, 'La déclaration d\'éthique doit contenir au moins 50 caractères')
+    .max(2000, 'La déclaration d\'éthique ne peut pas dépasser 2000 caractères'),
+  conflictOfInterest: z.string()
+    .min(20, 'La déclaration de conflit d\'intérêts doit contenir au moins 20 caractères')
+    .max(1000, 'La déclaration de conflit d\'intérêts ne peut pas dépasser 1000 caractères')
+})
+
+export const reviewSchema = z.object({
+  recommendation: z.enum(['ACCEPT', 'MINOR_REVISION', 'MAJOR_REVISION', 'REJECT'], {
+    errorMap: () => ({ message: 'Recommandation requise' })
+  }),
+  comments: z.string()
+    .min(50, 'Les commentaires doivent contenir au moins 50 caractères')
+    .max(5000, 'Les commentaires ne peuvent pas dépasser 5000 caractères'),
+  confidentialComments: z.string()
+    .max(2000, 'Les commentaires confidentiels ne peuvent pas dépasser 2000 caractères')
+    .optional(),
+  technicalQuality: z.number()
+    .min(1, 'La qualité technique doit être entre 1 et 5')
+    .max(5, 'La qualité technique doit être entre 1 et 5'),
+  novelty: z.number()
+    .min(1, 'La nouveauté doit être entre 1 et 5')
+    .max(5, 'La nouveauté doit être entre 1 et 5'),
+  significance: z.number()
+    .min(1, 'La significance doit être entre 1 et 5')
+    .max(5, 'La significance doit être entre 1 et 5'),
+  clarity: z.number()
+    .min(1, 'La clarté doit être entre 1 et 5')
+    .max(5, 'La clarté doit être entre 1 et 5'),
+  overallScore: z.number()
+    .min(1, 'Le score global doit être entre 1 et 5')
+    .max(5, 'Le score global doit être entre 1 et 5')
+})

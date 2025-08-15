@@ -23,7 +23,7 @@ function SubmissionsListContent() {
     const statusConfig = {
       PENDING: { label: 'En attente', color: 'bg-gray-100 text-gray-800' },
       ASSIGNED: { label: 'Assigné', color: 'bg-blue-100 text-blue-800' },
-      REVIEWING: { label: 'En cours', color: 'bg-yellow-100 text-yellow-800' },
+      REVIEWING: { label: 'En évaluation', color: 'bg-yellow-100 text-yellow-800' },
       DECISION_MADE: { label: 'Décision prise', color: 'bg-purple-100 text-purple-800' },
       COMPLETED: { label: 'Terminé', color: 'bg-green-100 text-green-800' }
     }
@@ -85,7 +85,7 @@ function SubmissionsListContent() {
     const isAssigned = submission.editorAssignments.some((ea: any) => ea.editor.id === user?.id)
     const hasReviewed = submission.reviews.some((r: any) => r.reviewer.id === user?.id && r.isCompleted)
     
-    if (isAssigned && !hasReviewed && submission.status === 'ASSIGNED') {
+    if (isAssigned && !hasReviewed && submission.status === 'REVIEWING') {
       actions.push(
         <Link
           key="review"

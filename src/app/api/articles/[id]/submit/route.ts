@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/src/libs/prisma'
 import { authenticate } from '@/src/libs/middleware'
+import { submissionSchema } from '@/src/libs/validation'
 import { ArticleStatus } from '@prisma/client'
 
 // POST /api/articles/[id]/submit - Soumettre un article pour review
@@ -11,6 +12,16 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     const { id } = params
     const body = await request.json()
 
+    // Validation des données
+    try {
+      submissionSchema.parse(body)
+    } catch (validationError: any) {
+      return NextResponse.json(
+        { success: false, message: 'Données de soumission invalides', errors: validationError.errors },
+        { status: 400 }
+      )
+    }
+
     // Vérifier que l'article existe
     const article = await prisma.article.findUnique({
       where: { id },
@@ -18,7 +29,10 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
         id: true,
         authorId: true,
         status: true,
-        title: true
+        title: true,
+        manuscriptUrl: true,
+        abstract: true,
+        content: true
       }
     })
 
@@ -41,6 +55,28 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     if (!['DRAFT', 'REVISION_REQUIRED'].includes(article.status)) {
       return NextResponse.json(
         { success: false, message: 'Cet article ne peut pas être soumis dans son état actuel' },
+        { status: 400 }
+      )
+    }
+
+    // Vérifier que l'article est complet
+    const missingFields = []
+    if (!article.abstract || article.abstract.length < 100) {
+      missingFields.push('Résumé (minimum 100 caractères)')
+    }
+    if (!article.content || article.content.length < 1000) {
+      missingFields.push('Contenu (minimum 1000 caractères)')
+    }
+    if (!article.manuscriptUrl) {
+      missingFields.push('Fichier manuscrit')
+    }
+
+    if (missingFields.length > 0) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: `Article incomplet. Champs manquants : ${missingFields.join(', ')}` 
+        },
         { status: 400 }
       )
     }

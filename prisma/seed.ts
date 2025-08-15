@@ -8,6 +8,7 @@ async function main() {
 
   // Créer les catégories principales
   const categories = [
+    // Informatique
     {
       name: 'Intelligence Artificielle',
       slug: 'intelligence-artificielle',
@@ -32,6 +33,145 @@ async function main() {
       name: 'Bases de Données',
       slug: 'bases-donnees',
       description: 'SGBD, Big Data, Data Mining'
+    },
+    
+    // Sciences exactes
+    {
+      name: 'Mathématiques',
+      slug: 'mathematiques',
+      description: 'Algèbre, analyse, géométrie, statistiques'
+    },
+    {
+      name: 'Physique',
+      slug: 'physique',
+      description: 'Physique théorique et expérimentale'
+    },
+    {
+      name: 'Chimie',
+      slug: 'chimie',
+      description: 'Chimie organique, inorganique, analytique'
+    },
+    {
+      name: 'Biologie',
+      slug: 'biologie',
+      description: 'Biologie moléculaire, cellulaire, écologie'
+    },
+    
+    // Sciences humaines
+    {
+      name: 'Psychologie',
+      slug: 'psychologie',
+      description: 'Psychologie cognitive, sociale, clinique'
+    },
+    {
+      name: 'Sociologie',
+      slug: 'sociologie',
+      description: 'Sociologie urbaine, du travail, politique'
+    },
+    {
+      name: 'Linguistique',
+      slug: 'linguistique',
+      description: 'Linguistique générale, appliquée, computationnelle'
+    },
+    {
+      name: 'Histoire',
+      slug: 'histoire',
+      description: 'Histoire contemporaine, médiévale, moderne'
+    },
+    {
+      name: 'Géographie',
+      slug: 'geographie',
+      description: 'Géographie humaine, physique, environnementale'
+    },
+    
+    // Sciences économiques et sociales
+    {
+      name: 'Économie',
+      slug: 'economie',
+      description: 'Microéconomie, macroéconomie, économétrie'
+    },
+    {
+      name: 'Gestion',
+      slug: 'gestion',
+      description: 'Management, finance, marketing, stratégie'
+    },
+    {
+      name: 'Science Politique',
+      slug: 'science-politique',
+      description: 'Politique comparée, relations internationales'
+    },
+    
+    // Sciences médicales
+    {
+      name: 'Médecine',
+      slug: 'medecine',
+      description: 'Médecine clinique, recherche biomédicale'
+    },
+    {
+      name: 'Pharmacie',
+      slug: 'pharmacie',
+      description: 'Pharmacologie, toxicologie, développement de médicaments'
+    },
+    {
+      name: 'Santé Publique',
+      slug: 'sante-publique',
+      description: 'Épidémiologie, prévention, politiques de santé'
+    },
+    
+    // Sciences de l'ingénieur
+    {
+      name: 'Génie Civil',
+      slug: 'genie-civil',
+      description: 'Construction, structures, matériaux'
+    },
+    {
+      name: 'Génie Électrique',
+      slug: 'genie-electrique',
+      description: 'Électronique, automatique, télécommunications'
+    },
+    {
+      name: 'Génie Mécanique',
+      slug: 'genie-mecanique',
+      description: 'Mécanique des fluides, thermodynamique, matériaux'
+    },
+    
+    // Sciences environnementales
+    {
+      name: 'Écologie',
+      slug: 'ecologie',
+      description: 'Écosystèmes, biodiversité, conservation'
+    },
+    {
+      name: 'Sciences de l\'Environnement',
+      slug: 'sciences-environnement',
+      description: 'Changement climatique, pollution, durabilité'
+    },
+    
+    // Autres disciplines
+    {
+      name: 'Philosophie',
+      slug: 'philosophie',
+      description: 'Philosophie analytique, continentale, éthique'
+    },
+    {
+      name: 'Éducation',
+      slug: 'education',
+      description: 'Pédagogie, didactique, sciences de l\'éducation'
+    },
+    {
+      name: 'Droit',
+      slug: 'droit',
+      description: 'Droit public, privé, international'
+    },
+    {
+      name: 'Arts et Lettres',
+      slug: 'arts-lettres',
+      description: 'Littérature, arts visuels, études culturelles'
+    },
+    {
+      name: 'Communication',
+      slug: 'communication',
+      description: 'Sciences de l\'information et de la communication'
     }
   ]
 
