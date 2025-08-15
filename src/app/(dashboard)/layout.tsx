@@ -102,7 +102,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         UserRole.ADMIN,
       ]}
     >
-      <GlobalLayout
+      {/* <GlobalLayout
         title={title}
         subtitle={subtitle}
         className={twMerge(className, "lg:p-3")}
@@ -110,7 +110,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         hideHeader={hideHeader}
         hideFooter={hideFooter}
         {...props}
-      >
+      > */}
         <Sidebar className="hidden overflow-auto lg:block" />
         <MobileBar className="bg-white lg:hidden" />
         <div className="flex w-full flex-col overflow-auto rounded-lg bg-slate-100/50 shadow-sm lg:bg-white ">
@@ -127,7 +127,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             )}
           </div>
         </div>
-      </GlobalLayout>
+      {/* </GlobalLayout> */}
     </ProtectedRoute>
   );
 };

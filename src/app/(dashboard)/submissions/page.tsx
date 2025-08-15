@@ -1,60 +1,79 @@
 // app/(dashboard)/submissions/page.tsx
-'use client'
+"use client";
 
-import { useState } from 'react'
-import Link from 'next/link'
-import { UserRole } from '@prisma/client'
-import { useSubmissions } from '@/src/hooks/useSubmissions'
-import { useAuth } from '@/src/hooks/useAuth'
-import ProtectedRoute from '@/src/components/auth/ProtectedRoute'
+import { useState } from "react";
+import Link from "next/link";
+import { UserRole } from "@prisma/client";
+import { useSubmissions } from "@/src/hooks/useSubmissions";
+import { useAuth } from "@/src/hooks/useAuth";
 
 function SubmissionsListContent() {
-  const { user } = useAuth()
-  const { submissions, loading, error, pagination, updateFilters } = useSubmissions()
-  const [filters, setFilters] = useState({ search: '', status: '' })
+  const { user } = useAuth();
+  const { submissions, loading, error, pagination, updateFilters } =
+    useSubmissions();
+  const [filters, setFilters] = useState({ search: "", status: "" });
 
   const handleFilterChange = (key: string, value: string) => {
-    const newFilters = { ...filters, [key]: value }
-    setFilters(newFilters)
-    updateFilters(newFilters)
-  }
+    const newFilters = { ...filters, [key]: value };
+    setFilters(newFilters);
+    updateFilters(newFilters);
+  };
 
   const getStatusBadge = (status: string) => {
     const statusConfig = {
-      PENDING: { label: 'En attente', color: 'bg-gray-100 text-gray-800' },
-      ASSIGNED: { label: 'Assigné', color: 'bg-blue-100 text-blue-800' },
-      REVIEWING: { label: 'En évaluation', color: 'bg-yellow-100 text-yellow-800' },
-      DECISION_MADE: { label: 'Décision prise', color: 'bg-purple-100 text-purple-800' },
-      COMPLETED: { label: 'Terminé', color: 'bg-green-100 text-green-800' }
-    }
+      PENDING: { label: "En attente", color: "bg-gray-100 text-gray-800" },
+      ASSIGNED: { label: "Assigné", color: "bg-blue-100 text-blue-800" },
+      REVIEWING: {
+        label: "En évaluation",
+        color: "bg-yellow-100 text-yellow-800",
+      },
+      DECISION_MADE: {
+        label: "Décision prise",
+        color: "bg-purple-100 text-purple-800",
+      },
+      COMPLETED: { label: "Terminé", color: "bg-green-100 text-green-800" },
+    };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.PENDING
+    const config =
+      statusConfig[status as keyof typeof statusConfig] || statusConfig.PENDING;
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
+      <span
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}
+      >
         {config.label}
       </span>
-    )
-  }
+    );
+  };
 
   const getArticleStatusBadge = (status: string) => {
     const statusConfig = {
-      SUBMITTED: { label: 'Soumis', color: 'bg-blue-100 text-blue-800' },
-      UNDER_REVIEW: { label: 'En évaluation', color: 'bg-yellow-100 text-yellow-800' },
-      REVISION_REQUIRED: { label: 'Révision requise', color: 'bg-orange-100 text-orange-800' },
-      ACCEPTED: { label: 'Accepté', color: 'bg-green-100 text-green-800' },
-      REJECTED: { label: 'Rejeté', color: 'bg-red-100 text-red-800' }
-    }
+      SUBMITTED: { label: "Soumis", color: "bg-blue-100 text-blue-800" },
+      UNDER_REVIEW: {
+        label: "En évaluation",
+        color: "bg-yellow-100 text-yellow-800",
+      },
+      REVISION_REQUIRED: {
+        label: "Révision requise",
+        color: "bg-orange-100 text-orange-800",
+      },
+      ACCEPTED: { label: "Accepté", color: "bg-green-100 text-green-800" },
+      REJECTED: { label: "Rejeté", color: "bg-red-100 text-red-800" },
+    };
 
-    const config = statusConfig[status as keyof typeof statusConfig] || statusConfig.SUBMITTED
+    const config =
+      statusConfig[status as keyof typeof statusConfig] ||
+      statusConfig.SUBMITTED;
     return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}>
+      <span
+        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${config.color}`}
+      >
         {config.label}
       </span>
-    )
-  }
+    );
+  };
 
   const getActionsForSubmission = (submission: any) => {
-    const actions = []
+    const actions = [];
 
     // Voir le détail (tous les rôles autorisés)
     actions.push(
@@ -65,11 +84,13 @@ function SubmissionsListContent() {
       >
         Voir
       </Link>
-    )
+    );
 
     // Assigner des reviewers (ADMIN et EDITOR seulement)
-    if ((user?.role === UserRole.ADMIN || user?.role === UserRole.EDITOR) && 
-        submission.status === 'PENDING') {
+    if (
+      (user?.role === UserRole.ADMIN || user?.role === UserRole.EDITOR) &&
+      submission.status === "PENDING"
+    ) {
       actions.push(
         <Link
           key="assign"
@@ -78,14 +99,18 @@ function SubmissionsListContent() {
         >
           Assigner
         </Link>
-      )
+      );
     }
 
     // Faire une review (si assigné comme reviewer)
-    const isAssigned = submission.editorAssignments.some((ea: any) => ea.editor.id === user?.id)
-    const hasReviewed = submission.reviews.some((r: any) => r.reviewer.id === user?.id && r.isCompleted)
-    
-    if (isAssigned && !hasReviewed && submission.status === 'REVIEWING') {
+    const isAssigned = submission.editorAssignments.some(
+      (ea: any) => ea.editor.id === user?.id
+    );
+    const hasReviewed = submission.reviews.some(
+      (r: any) => r.reviewer.id === user?.id && r.isCompleted
+    );
+
+    if (isAssigned && !hasReviewed && submission.status === "REVIEWING") {
       actions.push(
         <Link
           key="review"
@@ -94,12 +119,14 @@ function SubmissionsListContent() {
         >
           Évaluer
         </Link>
-      )
+      );
     }
 
     // Prendre une décision finale (ADMIN et EDITOR seulement)
-    if ((user?.role === UserRole.ADMIN || user?.role === UserRole.EDITOR) && 
-        submission.status === 'DECISION_MADE') {
+    if (
+      (user?.role === UserRole.ADMIN || user?.role === UserRole.EDITOR) &&
+      submission.status === "DECISION_MADE"
+    ) {
       actions.push(
         <Link
           key="decide"
@@ -108,11 +135,11 @@ function SubmissionsListContent() {
         >
           Décision
         </Link>
-      )
+      );
     }
 
-    return actions
-  }
+    return actions;
+  };
 
   if (loading) {
     return (
@@ -120,7 +147,7 @@ function SubmissionsListContent() {
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         <span className="ml-2 text-gray-600">Chargement...</span>
       </div>
-    )
+    );
   }
 
   return (
@@ -128,18 +155,19 @@ function SubmissionsListContent() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gestion des soumissions</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Gestion des soumissions
+          </h1>
           <p className="text-gray-600">
-            {user?.role === UserRole.REVIEWER 
-              ? 'Soumissions qui vous sont assignées'
-              : 'Gérez les soumissions d\'articles'
-            }
+            {user?.role === UserRole.REVIEWER
+              ? "Soumissions qui vous sont assignées"
+              : "Gérez les soumissions d'articles"}
           </p>
         </div>
-        
+
         <div className="flex items-center space-x-4">
           <div className="text-sm text-gray-500">
-            {pagination.total} soumission{pagination.total > 1 ? 's' : ''}
+            {pagination.total} soumission{pagination.total > 1 ? "s" : ""}
           </div>
         </div>
       </div>
@@ -155,7 +183,7 @@ function SubmissionsListContent() {
               type="text"
               placeholder="Titre, auteur..."
               value={filters.search}
-              onChange={(e) => handleFilterChange('search', e.target.value)}
+              onChange={(e) => handleFilterChange("search", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
@@ -166,7 +194,7 @@ function SubmissionsListContent() {
             </label>
             <select
               value={filters.status}
-              onChange={(e) => handleFilterChange('status', e.target.value)}
+              onChange={(e) => handleFilterChange("status", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             >
               <option value="">Tous les statuts</option>
@@ -195,10 +223,9 @@ function SubmissionsListContent() {
             Aucune soumission trouvée
           </h3>
           <p className="text-gray-600">
-            {user?.role === UserRole.REVIEWER 
-              ? 'Aucune soumission ne vous est actuellement assignée.'
-              : 'Aucune soumission ne correspond à vos critères de recherche.'
-            }
+            {user?.role === UserRole.REVIEWER
+              ? "Aucune soumission ne vous est actuellement assignée."
+              : "Aucune soumission ne correspond à vos critères de recherche."}
           </p>
         </div>
       ) : (
@@ -250,14 +277,16 @@ function SubmissionsListContent() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {submission.article.author.firstName} {submission.article.author.lastName}
+                        {submission.article.author.firstName}{" "}
+                        {submission.article.author.lastName}
                       </div>
                       <div className="text-sm text-gray-500">
                         {submission.article.author.affiliation}
                       </div>
                       {submission.article.coAuthors.length > 0 && (
                         <div className="text-xs text-gray-500">
-                          +{submission.article.coAuthors.length} co-auteur{submission.article.coAuthors.length > 1 ? 's' : ''}
+                          +{submission.article.coAuthors.length} co-auteur
+                          {submission.article.coAuthors.length > 1 ? "s" : ""}
                         </div>
                       )}
                     </td>
@@ -269,20 +298,23 @@ function SubmissionsListContent() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {submission.reviews.filter(r => r.isCompleted).length} / {submission.editorAssignments.length}
+                        {submission.reviews.filter((r) => r.isCompleted).length}{" "}
+                        / {submission.editorAssignments.length}
                       </div>
-                      <div className="text-xs text-gray-500">
-                        terminées
-                      </div>
+                      <div className="text-xs text-gray-500">terminées</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(submission.submittedAt).toLocaleDateString('fr-FR')}
+                      {new Date(submission.submittedAt).toLocaleDateString(
+                        "fr-FR"
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                       <div className="flex space-x-2 justify-end">
-                        {getActionsForSubmission(submission).map((action, index) => (
-                          <span key={index}>{action}</span>
-                        ))}
+                        {getActionsForSubmission(submission).map(
+                          (action, index) => (
+                            <span key={index}>{action}</span>
+                          )
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -298,7 +330,9 @@ function SubmissionsListContent() {
                 <div className="flex-1 flex justify-between sm:hidden">
                   {pagination.page > 1 && (
                     <button
-                      onClick={() => updateFilters({ page: pagination.page - 1 })}
+                      onClick={() =>
+                        updateFilters({ page: pagination.page - 1 })
+                      }
                       className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                     >
                       Précédent
@@ -306,7 +340,9 @@ function SubmissionsListContent() {
                   )}
                   {pagination.page < pagination.pages && (
                     <button
-                      onClick={() => updateFilters({ page: pagination.page + 1 })}
+                      onClick={() =>
+                        updateFilters({ page: pagination.page + 1 })
+                      }
                       className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                     >
                       Suivant
@@ -316,28 +352,35 @@ function SubmissionsListContent() {
                 <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sm text-gray-700">
-                      Affichage de{' '}
+                      Affichage de{" "}
                       <span className="font-medium">
                         {(pagination.page - 1) * pagination.limit + 1}
-                      </span>{' '}
-                      à{' '}
+                      </span>{" "}
+                      à{" "}
                       <span className="font-medium">
-                        {Math.min(pagination.page * pagination.limit, pagination.total)}
-                      </span>{' '}
-                      sur{' '}
-                      <span className="font-medium">{pagination.total}</span> résultats
+                        {Math.min(
+                          pagination.page * pagination.limit,
+                          pagination.total
+                        )}
+                      </span>{" "}
+                      sur{" "}
+                      <span className="font-medium">{pagination.total}</span>{" "}
+                      résultats
                     </p>
                   </div>
                   <div>
                     <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                      {Array.from({ length: pagination.pages }, (_, i) => i + 1).map((page) => (
+                      {Array.from(
+                        { length: pagination.pages },
+                        (_, i) => i + 1
+                      ).map((page) => (
                         <button
                           key={page}
                           onClick={() => updateFilters({ page })}
                           className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                             page === pagination.page
-                              ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                              : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                              ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
+                              : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
                           }`}
                         >
                           {page}
@@ -352,13 +395,13 @@ function SubmissionsListContent() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export default function SubmissionsListPage() {
   return (
-    <ProtectedRoute allowedRoles={[UserRole.ADMIN, UserRole.EDITOR, UserRole.REVIEWER]}>
+    <>
       <SubmissionsListContent />
-    </ProtectedRoute>
-  )
+    </>
+  );
 }

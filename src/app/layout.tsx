@@ -1,7 +1,7 @@
+import "./globals.css";
 import { ToastProvider } from "../components/common/ToastContainer";
 import { siteData } from "../data/app";
 import { AuthProvider } from "../hooks/useAuth";
-import "./globals.css";
 
 export const metadata = {
   title: siteData.siteName,
@@ -15,9 +15,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body>
+      <body className="">
         <AuthProvider>
-          <ToastProvider>{children}</ToastProvider>
+          {children}
+          <ToastProvider />
         </AuthProvider>
       </body>
     </html>
