@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Avatar } from "../common/Avatar";
 import { ChevronRight, Save, Share2Icon } from "lucide-react";
 import { Article } from "@/src/types/articles";
+import { formatDate, getAuthorInfo, getAuthorName, truncateText } from "@/src/utils/articleHelpers";
 
 interface Author {
   id: string;
@@ -23,32 +24,7 @@ export default function ArticleCard({
   article,
   compact = false,
 }: ArticleCardProps) {
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("fr-FR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  const truncateText = (text: string, maxLength: number) => {
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength).trim() + "...";
-  };
-
-  const getAuthorName = (author: Author) => {
-    return `${author.title ? author.title + " " : ""}${author.firstName} ${
-      author.lastName
-    }`;
-  };
-
-  const getAuthorInfo = (author: Author) => {
-    const parts = [];
-    if (author.affiliation) parts.push(author.affiliation);
-    if (author.department) parts.push(author.department);
-    return parts.join(", ");
-  };
-
+  
   if (compact) {
     return (
       <div className="bg-white rounded-md shadow-sm hover:shadow-md transition-shadow duration-300 p-4 border border-gray-100">
@@ -63,8 +39,8 @@ export default function ArticleCard({
               </Link>
             </h3>
             <Avatar
-              name={`${getAuthorName(article.author)}`}
-              tagline={getAuthorInfo(article.author)}
+              name={`${getAuthorName(article)}`}
+              tagline={getAuthorInfo(article)}
             />
 
             <p className="text-sm text-gray-500 mb-3 line-clamp-2">
@@ -111,11 +87,11 @@ export default function ArticleCard({
             <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
               <div>
                 <span className="font-medium text-gray-900">
-                  {getAuthorName(article.author)}
+                  {getAuthorName(article)}
                 </span>
-                {getAuthorInfo(article.author) && (
+                {getAuthorInfo(article) && (
                   <span className="block text-xs text-gray-500">
-                    {getAuthorInfo(article.author)}
+                    {getAuthorInfo(article)}
                   </span>
                 )}
               </div>

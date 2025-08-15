@@ -1,4 +1,3 @@
-// app/(public)/articles/[id]/page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,69 +5,21 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { formatDate, generateCitation } from "@/src/utils/articleHelpers";
+import {
+  formatDate,
+  generateCitation,
+  getAuthorInfo,
+  getAuthorName,
+} from "@/src/utils/articleHelpers";
 import { Avatar } from "@/src/components/common/Avatar";
-
-interface PublicArticleDetail {
-  id: string;
-  title: string;
-  abstract: string;
-  content: string;
-  keywords: string[];
-  language: string;
-  doi?: string;
-  publishedAt: string;
-  createdAt: string;
-  author: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    title?: string;
-    affiliation?: string;
-    department?: string;
-    bio?: string;
-    orcid?: string;
-  };
-  category: {
-    id: string;
-    name: string;
-    slug: string;
-    description?: string;
-  };
-  coAuthors: {
-    id: string;
-    order: number;
-    author: {
-      id: string;
-      firstName: string;
-      lastName: string;
-      title?: string;
-      affiliation?: string;
-      department?: string;
-      orcid?: string;
-    };
-  }[];
-  journal?: {
-    id: string;
-    name: string;
-    issn?: string;
-    description?: string;
-  };
-  issue?: {
-    id: string;
-    volume: number;
-    number: number;
-    year: number;
-    title?: string;
-    description?: string;
-  };
-}
+import { Article } from "@/src/types/articles";
+import { CloudDownload, Loader2Icon, Share2 } from "lucide-react";
 
 export default function PublicArticlePage() {
   const params = useParams();
   const articleId = params.id as string;
 
-  const [article, setArticle] = useState<PublicArticleDetail | null>(null);
+  const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [citationFormat, setCitationFormat] = useState<
@@ -96,19 +47,6 @@ export default function PublicArticlePage() {
     }
   };
 
-  const getAuthorName = (author: any) => {
-    return `${author.title ? author.title + " " : ""}${author.firstName} ${
-      author.lastName
-    }`;
-  };
-
-  const getAuthorInfo = (author: any) => {
-    const parts = [];
-    if (author.affiliation) parts.push(author.affiliation);
-    if (author.department) parts.push(author.department);
-    return parts.join(", ");
-  };
-
   const handleShare = () => {
     if (navigator.share) {
       navigator.share({
@@ -124,36 +62,26 @@ export default function PublicArticlePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
-            <div className="space-y-4">
-              <div className="h-4 bg-gray-200 rounded"></div>
-              <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-              <div className="h-4 bg-gray-200 rounded w-4/6"></div>
-            </div>
-          </div>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Loader2Icon className="animate-spin text-slate-500" />
       </div>
     );
   }
 
   if (error || !article) {
     return (
-      <div className="min-h-screen bg-gray-50 py-12">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="text-6xl mb-4">📄</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            Article non trouvé
+          <h1 className="text-2xl font-bold text-gray-900 mb-4 recoleta">
+            Article non trouve
           </h1>
           <p className="text-gray-600 mb-8">
             {error || "Cet article n'existe pas ou n'est pas encore publié."}
           </p>
           <Link
             href="/articles"
-            className="inline-flex items-center px-6 py-3  text-base font-medium rounded-md text-white"
+            className="inline-flex items-center px-6 py-3 text-base font-medium border rounded-full"
           >
             Voir tous les articles
           </Link>
@@ -164,21 +92,8 @@ export default function PublicArticlePage() {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-32">
-      {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <nav className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
-            <Link href="/" className="hover:text-gray-700">
-              Accueil
-            </Link>
-            <span>›</span>
-            <Link href="/articles" className="hover:text-gray-700">
-              Articles
-            </Link>
-            <span>›</span>
-            <span className="text-gray-900">{article.category.name}</span>
-          </nav>
-
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
@@ -195,19 +110,7 @@ export default function PublicArticlePage() {
                 className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
                 title="Partager"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
-                  />
-                </svg>
+                <Share2 className="w-5 h-5" />
               </button>
 
               <button
@@ -215,30 +118,17 @@ export default function PublicArticlePage() {
                 className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100"
                 title="Imprimer"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-                  />
-                </svg>
+                <CloudDownload className="w-5 h-5" />
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Contenu principal */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <article className="bg-white rounded-lg shadow-sm p-8">
           <header className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 leading-tight mb-6">
+            <h1 className="text-xl font-bold text-gray-900 leading-tight mb-6">
               {article.title}
             </h1>
 
@@ -284,17 +174,16 @@ export default function PublicArticlePage() {
 
             <div className="space-y-4">
               <Avatar
-                name={`${getAuthorName(article.author)} (Auteur principal)`}
-                tagline={getAuthorInfo(article.author)}
+                name={`${getAuthorName(article)} (Auteur principal)`}
+                tagline={getAuthorInfo(article)}
               />
 
-              {/* Co-auteurs */}
-              {article.coAuthors.map((coAuthor) => (
+              {/* {article.coAuthors.map((coAuthor) => (
                 <Avatar
                   name={getAuthorName(coAuthor.author)}
                   tagline={getAuthorInfo(coAuthor.author)}
                 />
-              ))}
+              ))} */}
             </div>
           </section>
 
@@ -302,7 +191,9 @@ export default function PublicArticlePage() {
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Résumé</h2>
             <div className="prose max-w-none">
               <p className="text-gray-700 leading-relaxed text-justify">
-                {article.abstract}
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {article.abstract}
+                </ReactMarkdown>
               </p>
             </div>
           </section>
@@ -323,15 +214,11 @@ export default function PublicArticlePage() {
             </div>
           </section>
 
-          {/* Contenu */}
           <section className="mb-8">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">
               Article complet
             </h2>
             <div className="prose max-w-none">
-              {/* <div className="text-gray-700 leading-relaxed text-justify whitespace-pre-wrap">
-                {article.content}
-              </div> */}
               <div className="prose prose-lg max-w-none">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                   {article.content}
@@ -340,10 +227,11 @@ export default function PublicArticlePage() {
             </div>
           </section>
 
-          {/* Citation */}
           <section className="mb-8 p-6 bg-gray-50 rounded-lg">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Citation</h2>
+              <h2 className="text-lg font-semibold text-gray-900 recoleta">
+                Citation
+              </h2>
               <select
                 value={citationFormat}
                 onChange={(e) => setCitationFormat(e.target.value as any)}
@@ -373,9 +261,8 @@ export default function PublicArticlePage() {
           </section>
         </article>
 
-        {/* Articles similaires */}
         <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-6 recoleta">
             Articles similaires
           </h2>
           <div className="text-center py-8 text-gray-500">
