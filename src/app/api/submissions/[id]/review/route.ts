@@ -6,20 +6,20 @@ import { reviewSchema } from '@/src/libs/validation'
 import { UserRole, ReviewDecision } from '@prisma/client'
 
 // POST /api/submissions/[id]/review - Soumettre une review
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await authenticate(request)
     authorize([UserRole.ADMIN, UserRole.EDITOR, UserRole.REVIEWER])(user)
 
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
 
     // Validation des données
     try {
       reviewSchema.parse(body)
-    } catch (validationError: any) {
+    } catch (validationError: unknown) {
       return NextResponse.json(
-        { success: false, message: 'Données de révision invalides', errors: validationError.errors },
+        { success: false, message: 'Données de révision invalides', errors: validationError && typeof validationError === 'object' && 'errors' in validationError ? (validationError as { errors: unknown }).errors : [] },
         { status: 400 }
       )
     }

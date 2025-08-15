@@ -32,10 +32,13 @@ export function useReviewValidation() {
       
       // Si pas d'erreur, supprimer l'erreur existante
       delete newErrors[field]
-    } catch (validationError: any) {
+    } catch (validationError: unknown) {
       // Ajouter l'erreur
-      if (validationError.errors && validationError.errors.length > 0) {
-        newErrors[field] = validationError.errors[0].message
+      if (validationError && typeof validationError === 'object' && 'errors' in validationError) {
+        const errors = (validationError as { errors: { message: string }[] }).errors
+        if (errors && errors.length > 0) {
+          newErrors[field] = errors[0].message
+        }
       }
     }
 
@@ -49,15 +52,18 @@ export function useReviewValidation() {
       setErrors({})
       setIsValid(true)
       return { isValid: true, errors: {} }
-    } catch (validationError: any) {
+    } catch (validationError: unknown) {
       const newErrors: ValidationErrors = {}
       
-      if (validationError.errors) {
-        validationError.errors.forEach((error: any) => {
-          if (error.path && error.path.length > 0) {
-            newErrors[error.path[0]] = error.message
-          }
-        })
+      if (validationError && typeof validationError === 'object' && 'errors' in validationError) {
+        const errors = (validationError as { errors: { path: string[]; message: string }[] }).errors
+        if (errors) {
+          errors.forEach((error) => {
+            if (error.path && error.path.length > 0) {
+              newErrors[error.path[0]] = error.message
+            }
+          })
+        }
       }
       
       setErrors(newErrors)

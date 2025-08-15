@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { Popover as HeadlessPopover, Transition } from "@headlessui/react";
 import React, { Fragment } from "react";
 import clsx from "clsx";
-import { ExtractProps } from "@/types/utils";
+import { ExtractProps } from "@/src/types/utils";
 
 function Popover({
   children,

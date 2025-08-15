@@ -1,5 +1,5 @@
 // lib/middleware.ts
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { AuthService } from './auth'
 import { prisma } from './prisma'
 import { AuthenticationError, AuthorizationError } from './errors'
@@ -13,7 +13,15 @@ export interface AuthenticatedRequest extends NextRequest {
   }
 }
 
-export async function authenticate(request: NextRequest): Promise<any> {
+interface User {
+  id: string
+  email: string
+  role: UserRole
+  isActive: boolean
+  isVerified: boolean
+}
+
+export async function authenticate(request: NextRequest): Promise<User> {
   const token = AuthService.extractTokenFromHeader(
     request.headers.get('authorization') || ''
   )
@@ -50,7 +58,7 @@ export async function authenticate(request: NextRequest): Promise<any> {
 }
 
 export function authorize(allowedRoles: UserRole[]) {
-  return (user: any) => {
+  return (user: User) => {
     if (!allowedRoles.includes(user.role)) {
       throw new AuthorizationError('Permissions insuffisantes')
     }

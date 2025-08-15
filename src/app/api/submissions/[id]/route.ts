@@ -5,7 +5,7 @@ import { authenticate, authorize } from '@/src/libs/middleware'
 import { UserRole } from '@prisma/client'
 
 interface RouteParams {
-  params: { id: string }
+  params: Promise<{ id: string }>
 }
 
 // GET /api/submissions/[id] - Récupérer une soumission spécifique
@@ -14,7 +14,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const user = await authenticate(request)
     authorize([UserRole.ADMIN, UserRole.EDITOR, UserRole.REVIEWER])(user)
 
-    const { id } = params
+    const { id } = await params
 
     const submission = await prisma.submission.findUnique({
       where: { id },

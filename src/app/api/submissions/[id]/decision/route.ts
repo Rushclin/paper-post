@@ -6,13 +6,13 @@ import { sendEmail } from '@/src/libs/email'
 import { UserRole, ArticleStatus } from '@prisma/client'
 
 // POST /api/submissions/[id]/decision - Prendre une décision finale
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await authenticate(request)
     // Seuls les ADMIN et EDITOR peuvent prendre des décisions finales
     authorize([UserRole.ADMIN, UserRole.EDITOR])(user)
 
-    const { id } = params
+    const { id } = await params
     const { decision, editorComments } = await request.json()
 
     // Validation

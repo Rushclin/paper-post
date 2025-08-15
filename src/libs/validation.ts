@@ -89,7 +89,7 @@ export const submissionSchema = z.object({
 
 export const reviewSchema = z.object({
   recommendation: z.enum(['ACCEPT', 'MINOR_REVISION', 'MAJOR_REVISION', 'REJECT'], {
-    errorMap: () => ({ message: 'Recommandation requise' })
+    message: 'Recommandation requise'
   }),
   comments: z.string()
     .min(50, 'Les commentaires doivent contenir au moins 50 caractères')

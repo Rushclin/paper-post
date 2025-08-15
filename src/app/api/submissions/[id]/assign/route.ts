@@ -6,13 +6,13 @@ import { authenticate, authorize } from '@/src/libs/middleware'
 import { UserRole } from '@prisma/client'
 
 // POST /api/submissions/[id]/assign - Assigner des reviewers
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const user = await authenticate(request)
     // Seuls les ADMIN et EDITOR peuvent assigner des reviewers
     authorize([UserRole.ADMIN, UserRole.EDITOR])(user)
 
-    const { id } = params
+    const { id } = await params
     const { reviewerIds } = await request.json()
 
     if (!Array.isArray(reviewerIds) || reviewerIds.length === 0) {

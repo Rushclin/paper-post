@@ -4,7 +4,7 @@
 import { twMerge } from "tailwind-merge";
 import { Dialog as HeadlessDialog, Transition } from "@headlessui/react";
 import { Fragment, createContext, useContext, useRef, useState } from "react";
-import { ExtractProps } from "@/types/utils";
+import { ExtractProps } from "@/src/types/utils";
 
 type Size = "sm" | "md" | "lg" | "xl";
 

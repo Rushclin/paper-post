@@ -7,6 +7,10 @@ import { AuthUser, JWTPayload } from '../types/auth'
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d'
 
+if (!JWT_SECRET) {
+  throw new Error('JWT_SECRET is required')
+}
+
 export class AuthService {
   // Hasher le mot de passe
   static async hashPassword(password: string): Promise<string> {
@@ -26,15 +30,15 @@ export class AuthService {
       role: user.role
     }
 
-    return jwt.sign(payload, JWT_SECRET, {
-      expiresIn: JWT_EXPIRES_IN
-    })
+    return jwt.sign(payload, JWT_SECRET as string, {
+      expiresIn: JWT_EXPIRES_IN as string
+    } as jwt.SignOptions)
   }
 
   // Vérifier et décoder un token JWT
   static verifyToken(token: string): JWTPayload | null {
     try {
-      return jwt.verify(token, JWT_SECRET) as JWTPayload
+      return jwt.verify(token, JWT_SECRET as string) as JWTPayload
     } catch (error) {
       return null
     }

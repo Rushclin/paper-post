@@ -5,15 +5,15 @@ import { authenticate } from '@/src/libs/middleware'
 import { articleSchema } from '@/src/libs/validation'
 import { NotFoundError, AuthorizationError } from '@/src/libs/errors'
 
-interface RouteParams {
-  params: { id: string }
+interface RouteContext {
+  params: Promise<{ id: string }>
 }
 
 // GET /api/articles/[id] - Récupérer un article spécifique
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(request: NextRequest, { params }: RouteContext) {
   try {
     const user = await authenticate(request)
-    const { id } = params
+    const { id } = await params
 
     const article = await prisma.article.findUnique({
       where: { id },
@@ -107,10 +107,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 }
 
 // PUT /api/articles/[id] - Modifier un article
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PUT(request: NextRequest, { params }: RouteContext) {
   try {
     const user = await authenticate(request)
-    const { id } = params
+    const { id } = await params
     const body = await request.json()
 
     // Vérifier que l'article existe et que l'utilisateur peut le modifier
@@ -250,10 +250,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE /api/articles/[id] - Supprimer un article
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(request: NextRequest, { params }: RouteContext) {
   try {
     const user = await authenticate(request)
-    const { id } = params
+    const { id } = await params
 
     // Vérifier que l'article existe et que l'utilisateur peut le supprimer
     const article = await prisma.article.findUnique({

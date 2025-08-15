@@ -9,7 +9,7 @@ type AsProp<C extends React.ElementType> = {
 
 type PropsToOmit<C extends React.ElementType, P> = keyof (AsProp<C> & P);
 
-type PolymorphicComponentProp<C extends React.ElementType, Props = {}> = Omit<
+type PolymorphicComponentProp<C extends React.ElementType, Props = Record<string, unknown>> = Omit<
   React.PropsWithChildren<AsProp<C>>,
   keyof Props
 > &
@@ -18,7 +18,7 @@ type PolymorphicComponentProp<C extends React.ElementType, Props = {}> = Omit<
 
 type PolymorphicComponentPropWithRef<
   C extends React.ElementType,
-  Props = {},
+  Props = Record<string, unknown>,
 > = PolymorphicComponentProp<C, Props> & { ref?: PolymorphicRef<C> };
 
 type ExtractProps<T> = T extends React.ComponentType<infer P> ? P : T;

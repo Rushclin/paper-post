@@ -17,6 +17,11 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
+// Export direct de la fonction sendEmail pour compatibilité
+export const sendEmail = async (to: string, subject: string, html: string): Promise<boolean> => {
+  return EmailService.sendEmail({ to, subject, html })
+}
+
 export class EmailService {
   static async sendEmail(options: EmailOptions): Promise<boolean> {
     try {

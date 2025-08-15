@@ -128,7 +128,7 @@ function EditArticleContent() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Modifier l'article</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Modifier l&apos;article</h1>
         <p className="text-gray-600">Apportez des modifications à votre publication</p>
       </div>
 

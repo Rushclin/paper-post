@@ -32,7 +32,6 @@ export const UserProfile: React.FC<UserProfileProps> = ({
           {({ close }) => (
             <>
               <Popover.Button
-                variant="outline-secondary"
                 className={twMerge("w-full sm:w-auto " + className)}
               >
                 <Avatar

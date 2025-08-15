@@ -5,7 +5,7 @@ import { twMerge } from "tailwind-merge";
 import { Menu as HeadlessMenu, Transition } from "@headlessui/react";
 import React, { Fragment } from "react";
 import clsx from "clsx";
-import { ExtractProps } from "@/types/utils";
+import { ExtractProps } from "@/src/types/utils";
 
 function Menu({
   children,
