@@ -1,8 +1,9 @@
-// components/public/ArticleCard.tsx - Composant réutilisable pour les cards d'articles
 "use client";
 
 import Link from "next/link";
 import { Avatar } from "../common/Avatar";
+import { ChevronRight, Save, Share2Icon } from "lucide-react";
+import { Article } from "@/src/types/articles";
 
 interface Author {
   id: string;
@@ -11,40 +12,6 @@ interface Author {
   title?: string;
   affiliation?: string;
   department?: string;
-}
-
-interface Article {
-  id: string;
-  title: string;
-  abstract: string;
-  keywords: string[];
-  publishedAt: string;
-  doi?: string;
-  author: Author;
-  category: {
-    id: string;
-    name: string;
-    slug: string;
-  };
-  coAuthors: {
-    id: string;
-    order: number;
-    author: Author;
-  }[];
-  journal?: {
-    id: string;
-    name: string;
-    issn?: string;
-  };
-  issue?: {
-    id: string;
-    volume: number;
-    number: number;
-    year: number;
-  };
-  _count: {
-    reviews: number;
-  };
 }
 
 interface ArticleCardProps {
@@ -105,7 +72,7 @@ export default function ArticleCard({
             </p>
 
             <div className="flex items-center justify-between text-xs text-gray-500">
-              <span>{formatDate(article.publishedAt)}</span>
+              <span>{formatDate(article.createdAt)}</span>
               <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
                 {article.category.name}
               </span>
@@ -116,22 +83,16 @@ export default function ArticleCard({
     );
   }
 
-  // Version complète (celle utilisée dans LatestArticles)
   return (
-    <article className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-100">
-      {/* Contenu identique à celui dans LatestArticles */}
+    <article
+      key={article.id}
+      className="bg-white rounded-md p-6 border border-gray-100 shadow-2xs"
+    >
       <div className="flex space-x-6">
-        <div className="flex-shrink-0">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-            {article.author.firstName.charAt(0)}
-            {article.author.lastName.charAt(0)}
-          </div>
-        </div>
-
         <div className="flex-1 min-w-0">
           <div className="mb-4">
-            <div className="flex items-start justify-between mb-3">
-              <h3 className="text-xl font-bold text-gray-900 leading-tight">
+            <div className="flex-row md:flex items-start justify-between mb-3">
+              <h3 className="text-md font-bold text-gray-900 leading-tight">
                 <Link
                   href={`/articles/${article.id}`}
                   className="hover:text-blue-600 transition-colors"
@@ -140,8 +101,8 @@ export default function ArticleCard({
                 </Link>
               </h3>
 
-              <div className="flex-shrink-0 ml-4">
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+              <div className="flex-shrink-0">
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                   {article.category.name}
                 </span>
               </div>
@@ -183,7 +144,7 @@ export default function ArticleCard({
             </div>
 
             <div className="flex items-center space-x-4 text-sm text-gray-500 mb-4">
-              <span>📅 {formatDate(article.publishedAt)}</span>
+              <span>📅 {formatDate(article.createdAt)}</span>
 
               {article.journal && (
                 <>
@@ -201,6 +162,20 @@ export default function ArticleCard({
                   </span>
                 </>
               )}
+
+              {article.doi && (
+                <>
+                  <span>•</span>
+                  <Link
+                    href={`https://doi.org/${article.doi}`}
+                    className="text-blue-600 hover:text-blue-800"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    DOI: {article.doi}
+                  </Link>
+                </>
+              )}
             </div>
           </div>
 
@@ -210,7 +185,7 @@ export default function ArticleCard({
             </p>
           </div>
 
-          {article.keywords.length > 0 && (
+          {(article.keywords || []).length > 0 && (
             <div className="mb-4">
               <div className="flex flex-wrap gap-2">
                 {article.keywords.slice(0, 5).map((keyword, keyIndex) => (
@@ -230,75 +205,26 @@ export default function ArticleCard({
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+          <div className="flex-row md:flex items-center justify-between pt-4 border-t border-gray-100">
             <div className="flex items-center space-x-6 text-sm text-gray-500">
               <div className="flex items-center space-x-1">
                 <span>👁️</span>
                 <span>{Math.floor(Math.random() * 1000) + 100} vues</span>
               </div>
-              <div className="flex items-center space-x-1">
-                <span>💬</span>
-                <span>{article._count.reviews} évaluations</span>
-              </div>
+
               <div className="flex items-center space-x-1">
                 <span>📊</span>
                 <span>{Math.floor(Math.random() * 50)} citations</span>
               </div>
             </div>
 
-            <div className="flex items-center space-x-3">
-              <button className="text-gray-500 hover:text-blue-600 transition-colors">
-                <span className="sr-only">Sauvegarder</span>
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                  />
-                </svg>
-              </button>
-
-              <button className="text-gray-500 hover:text-green-600 transition-colors">
-                <span className="sr-only">Partager</span>
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
-                  />
-                </svg>
-              </button>
-
+            <div className="flex items-center space-x-3 my-2">
               <Link
                 href={`/articles/${article.id}`}
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center px-4 py-2 text-sm font-medium rounded-full border"
               >
                 Lire l'article
-                <svg
-                  className="ml-2 w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
+                <ChevronRight className="w-3 h-3" />
               </Link>
             </div>
           </div>

@@ -4,25 +4,20 @@ import React from "react";
 import { siteData } from "@/src/data/app";
 import { footerDetails } from "@/src/data/footer";
 import { getPlatformIconByName } from "@/src/utils";
-import { BiBook } from "react-icons/bi";
+import { Logo } from "../common/Logo";
 
 const Footer: React.FC = () => {
   return (
     <footer className="bg-hero-background text-foreground py-10">
       <div className="max-w-7xl w-full mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-10">
         <div>
-          <Link href="/" className="flex items-center gap-2">
-            <BiBook className="min-w-fit w-5 h-5 md:w-7 md:h-7" />
-            <h3 className="manrope text-xl font-semibold cursor-pointer">
-              {siteData.siteName}
-            </h3>
-          </Link>
+          <Logo />
           <p className="mt-3.5 text-foreground-accent">
             {footerDetails.subheading}
           </p>
         </div>
         <div>
-          <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+          <h4 className="text-lg font-semibold mb-4">Liens rapides</h4>
           <ul className="text-foreground-accent">
             {footerDetails.quickLinks.map((link) => (
               <li key={link.text} className="mb-2">
@@ -34,7 +29,7 @@ const Footer: React.FC = () => {
           </ul>
         </div>
         <div>
-          <h4 className="text-lg font-semibold mb-4">Contact Us</h4>
+          <h4 className="text-lg font-semibold mb-4">Nous contacter</h4>
 
           {footerDetails.email && (
             <a

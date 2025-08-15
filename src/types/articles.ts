@@ -156,3 +156,24 @@ export interface SubmitArticleRequest {
   ethicsStatement: string
   conflictOfInterest: string
 }
+
+export interface UsePublicArticlesFilters {
+  limit?: number
+  page?: number
+  category?: string
+  search?: string
+}
+
+export interface UsePublicArticlesReturn {
+  articles: Article[]
+  loading: boolean
+  error: string
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    pages: number
+  }
+  refetch: () => void
+  updateFilters: (filters: Partial<UsePublicArticlesFilters>) => void
+}

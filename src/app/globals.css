@@ -1,4 +1,6 @@
+@import url('https://fonts.cdnfonts.com/css/recoleta');
 @import "tailwindcss";
+
 
 /* :root {
   --background: #ffffff;
@@ -78,4 +80,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .benefit-section:last-of-type > div {
   @apply mb-10;
+}
+
+.recoleta{
+  font-family: 'Recoleta', sans-serif;
 }

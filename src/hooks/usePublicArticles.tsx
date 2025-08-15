@@ -2,77 +2,10 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-
-interface PublicArticle {
-  id: string
-  title: string
-  abstract: string
-  keywords: string[]
-  publishedAt: string
-  doi?: string
-  author: {
-    id: string
-    firstName: string
-    lastName: string
-    title?: string
-    affiliation?: string
-    department?: string
-  }
-  category: {
-    id: string
-    name: string
-    slug: string
-  }
-  coAuthors: {
-    id: string
-    order: number
-    author: {
-      id: string
-      firstName: string
-      lastName: string
-      title?: string
-      affiliation?: string
-    }
-  }[]
-  journal?: {
-    id: string
-    name: string
-    issn?: string
-  }
-  issue?: {
-    id: string
-    volume: number
-    number: number
-    year: number
-  }
-  _count: {
-    reviews: number
-  }
-}
-
-interface UsePublicArticlesFilters {
-  limit?: number
-  page?: number
-  category?: string
-  search?: string
-}
-
-interface UsePublicArticlesReturn {
-  articles: PublicArticle[]
-  loading: boolean
-  error: string
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    pages: number
-  }
-  refetch: () => void
-  updateFilters: (filters: Partial<UsePublicArticlesFilters>) => void
-}
+import { Article, UsePublicArticlesFilters, UsePublicArticlesReturn } from '../types/articles'
 
 export function usePublicArticles(initialFilters: UsePublicArticlesFilters = {}): UsePublicArticlesReturn {
-  const [articles, setArticles] = useState<PublicArticle[]>([])
+  const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [filters, setFilters] = useState<UsePublicArticlesFilters>({
