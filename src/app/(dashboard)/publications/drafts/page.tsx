@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { UserRole } from "@prisma/client";
 
 function DraftsPageContent() {
   const [drafts, setDrafts] = useState([]);
@@ -65,7 +64,7 @@ function DraftsPageContent() {
             Aucun brouillon
           </h3>
           <p className="text-gray-600 mb-6">
-            Vous n'avez pas encore de brouillons en cours.
+            Vous n&apos;avez pas encore de brouillons en cours.
           </p>
           <Link
             href="/dashboard/publications/new"

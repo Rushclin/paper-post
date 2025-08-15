@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Manrope, Source_Sans_3 } from "next/font/google";
 import "./../globals.css";
 import { siteData } from "../../data/app";
-import Header from "../../components/public/Header";
-import Footer from "../../components/public/Footer";
 
 const manrope = Manrope({ subsets: ["latin"] });
 const sourceSans = Source_Sans_3({ subsets: ["latin"] });

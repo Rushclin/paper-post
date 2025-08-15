@@ -53,7 +53,7 @@ export const GlobalLayout: React.FC<GlobalLayoutProps> = ({
   title,
   subtitle,
   className = "",
-  bodyClassName = "",
+  // bodyClassName = "",
   hideHeader = false,
   hideFooter = false,
   ...props

@@ -28,7 +28,7 @@ function SubmitArticleContent() {
     conflictOfInterest: ''
   })
 
-  const { validateField, validateAll, hasError, getError, clearErrors } = useSubmissionValidation()
+  const { validateField, validateAll, hasError, getError } = useSubmissionValidation()
 
   useEffect(() => {
     fetchArticle()
@@ -56,6 +56,7 @@ function SubmitArticleContent() {
         setError(data.message)
       }
     } catch (error) {
+      console.error(error)
       setError('Erreur lors du chargement de l\'article')
     } finally {
       setLoading(false)
@@ -158,14 +159,14 @@ function SubmitArticleContent() {
           href={`/dashboard/publications/${articleId}`}
           className="text-blue-600 hover:text-blue-500 font-medium flex items-center"
         >
-          ← Retour à l'article
+          ← Retour à l&apos;article
         </Link>
       </div>
 
       {/* Informations de l'article */}
       <div className="bg-white rounded-lg border p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">
-          Soumettre l'article pour évaluation
+          Soumettre l&apos;article pour évaluation
         </h1>
         
         <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-6">
@@ -184,8 +185,8 @@ function SubmitArticleContent() {
               <h3 className="text-sm font-medium text-yellow-800">Important</h3>
               <div className="mt-2 text-sm text-yellow-700">
                 <ul className="list-disc list-inside space-y-1">
-                  <li>Une fois soumis, vous ne pourrez plus modifier l'article jusqu'à la décision des reviewers</li>
-                  <li>Le processus d'évaluation peut prendre 4 à 8 semaines</li>
+                  <li>Une fois soumis, vous ne pourrez plus modifier l&apos;article jusqu&apos;à la décision des reviewers</li>
+                  <li>Le processus d&apos;évaluation peut prendre 4 à 8 semaines</li>
                   <li>Vous recevrez une notification par email à chaque étape</li>
                 </ul>
               </div>
@@ -202,7 +203,7 @@ function SubmitArticleContent() {
 
         <div>
           <label htmlFor="coverLetter" className="block text-sm font-medium text-gray-700 mb-2">
-            Lettre d'accompagnement *
+            Lettre d&apos;accompagnement *
           </label>
           <textarea
             id="coverLetter"
@@ -222,7 +223,7 @@ function SubmitArticleContent() {
 
         <div>
           <label htmlFor="ethicsStatement" className="block text-sm font-medium text-gray-700 mb-2">
-            Déclaration d'éthique *
+            Déclaration d&apos;éthique *
           </label>
           <textarea
             id="ethicsStatement"
@@ -242,7 +243,7 @@ function SubmitArticleContent() {
 
         <div>
           <label htmlFor="conflictOfInterest" className="block text-sm font-medium text-gray-700 mb-2">
-            Déclaration de conflit d'intérêts *
+            Déclaration de conflit d&apos;intérêts *
           </label>
           <textarea
             id="conflictOfInterest"

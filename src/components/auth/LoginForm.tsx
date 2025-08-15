@@ -38,9 +38,11 @@ export default function LoginForm() {
         if (data.token) {
           localStorage.setItem('auth-token', data.token)
         }
+        alert("Bonjour")
         
         // Rediriger vers le dashboard
         router.push('/publications')
+        alert("Bonjour")
       } else {
         setError(data.message)
         if ('needsVerification' in data) {

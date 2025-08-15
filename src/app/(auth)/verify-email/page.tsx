@@ -42,6 +42,7 @@ export default function VerifyEmailPage() {
           setMessage(data.message || 'Erreur lors de la vérification')
         }
       } catch (error) {
+        console.error(error);
         setStatus('error')
         setMessage('Erreur de connexion')
       }

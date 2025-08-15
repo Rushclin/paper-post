@@ -121,6 +121,7 @@ function ArticlesListContent() {
         setError("Erreur lors du chargement des articles");
       }
     } catch (error) {
+      console.error(error);
       setError("Erreur de connexion");
     } finally {
       setLoading(false);
@@ -171,6 +172,7 @@ function ArticlesListContent() {
         alert(data.message || "Erreur lors de la suppression");
       }
     } catch (error) {
+      console.error(error);
       alert("Erreur de connexion");
     }
   };

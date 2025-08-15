@@ -4,7 +4,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { UserRole, ArticleStatus } from "@prisma/client";
+import { ArticleStatus } from "@prisma/client";
 
 interface ArticleDetail {
   id: string;
@@ -78,7 +78,6 @@ interface ArticleDetail {
 
 function ArticleDetailContent() {
   const params = useParams();
-  const router = useRouter();
   const articleId = params.id as string;
 
   const [article, setArticle] = useState<ArticleDetail | null>(null);
@@ -107,6 +106,7 @@ function ArticleDetailContent() {
       }
     } catch (error) {
       setError("Erreur lors du chargement de l'article");
+      console.error(error)
     } finally {
       setLoading(false);
     }
