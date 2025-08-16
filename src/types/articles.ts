@@ -105,6 +105,8 @@ export interface Article {
   _count?: {
     reviews: number
     submissions: number
+    views: number
+    citations: number
   }
 }
 

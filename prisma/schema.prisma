@@ -136,6 +136,8 @@ model Article {
   issue       Issue?          @relation(fields: [issueId], references: [id])
   submissions Submission[]
   reviews     Review[]
+  views       ArticleView[]
+  citations   ArticleCitation[]
 
   @@map("articles")
 }
@@ -300,4 +302,40 @@ model EmailTemplate {
   updatedAt DateTime @updatedAt
 
   @@map("email_templates")
+}
+
+// ================================
+// MODÈLES POUR MÉTRIQUES
+// ================================
+
+model ArticleView {
+  id        String   @id @default(cuid())
+  ipAddress String
+  userAgent String?
+  viewedAt  DateTime @default(now())
+
+  // Relations
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@map("article_views")
+}
+
+model ArticleCitation {
+  id             String      @id @default(cuid())
+  ipAddress      String
+  citationFormat CitationFormat
+  citedAt        DateTime    @default(now())
+
+  // Relations
+  articleId String
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@map("article_citations")
+}
+
+enum CitationFormat {
+  APA
+  MLA
+  CHICAGO
 }

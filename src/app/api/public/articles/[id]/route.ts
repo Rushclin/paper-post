@@ -69,6 +69,12 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
             title: true,
             description: true
           }
+        },
+        _count: {
+          select: {
+            views: true,
+            citations: true
+          }
         }
       }
     })

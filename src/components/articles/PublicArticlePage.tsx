@@ -29,6 +29,25 @@ export default function PublicArticlePage({
     fetchArticle();
   }, [articleId]);
 
+  useEffect(() => {
+    if (article) {
+      trackView();
+    }
+  }, [article]);
+
+  const trackView = async () => {
+    try {
+      await fetch(`/api/articles/${articleId}/view`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    } catch (error) {
+      console.error('Erreur lors du tracking de la vue:', error);
+    }
+  };
+
   const fetchArticle = async () => {
     try {
       const response = await fetch(`/api/public/articles/${articleId}`);
@@ -246,11 +265,27 @@ export default function PublicArticlePage({
                 {generateCitation(article, citationFormat)}
               </p>
               <button
-                onClick={() => {
-                  navigator.clipboard.writeText(
-                    generateCitation(article, citationFormat)
-                  );
-                  alert("Citation copiée!");
+                onClick={async () => {
+                  try {
+                    await fetch(`/api/articles/${articleId}/cite`, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({ format: citationFormat.toUpperCase() })
+                    });
+                    
+                    navigator.clipboard.writeText(
+                      generateCitation(article, citationFormat)
+                    );
+                    alert("Citation copiée!");
+                  } catch (error) {
+                    console.error('Erreur lors du tracking de la citation:', error);
+                    navigator.clipboard.writeText(
+                      generateCitation(article, citationFormat)
+                    );
+                    alert("Citation copiée!");
+                  }
                 }}
                 className="mt-2 text-xs text-blue-600 hover:text-blue-800"
               >

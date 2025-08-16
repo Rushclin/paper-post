@@ -2,18 +2,9 @@
 
 import Link from "next/link";
 import { Avatar } from "../common/Avatar";
-import { ChevronRight, Save, Share2Icon } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { Article } from "@/src/types/articles";
 import { formatDate, getAuthorInfo, getAuthorName, truncateText } from "@/src/utils/articleHelpers";
-
-interface Author {
-  id: string;
-  firstName: string;
-  lastName: string;
-  title?: string;
-  affiliation?: string;
-  department?: string;
-}
 
 interface ArticleCardProps {
   article: Article;
@@ -185,12 +176,12 @@ export default function ArticleCard({
             <div className="flex items-center space-x-6 text-sm text-gray-500">
               <div className="flex items-center space-x-1">
                 <span>👁️</span>
-                <span>{Math.floor(Math.random() * 1000) + 100} vues</span>
+                <span>{article._count?.views} vues</span>
               </div>
 
               <div className="flex items-center space-x-1">
                 <span>📊</span>
-                <span>{Math.floor(Math.random() * 50)} citations</span>
+                <span>{article._count?.citations} citations</span>
               </div>
             </div>
 
