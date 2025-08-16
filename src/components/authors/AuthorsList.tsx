@@ -34,6 +34,11 @@ interface Author {
   };
 }
 
+const getFullName = (author: Author) => {
+  const title = author.title ? `${author.title} ` : "";
+  return `${title}${author.firstName} ${author.lastName}`;
+};
+
 interface Pagination {
   page: number;
   limit: number;
@@ -99,24 +104,18 @@ export function AuthorsList() {
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
-  const getFullName = (author: Author) => {
-    const title = author.title ? `${author.title} ` : "";
-    return `${title}${author.firstName} ${author.lastName}`;
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm">
+
+      <div className="bg-white shadow-sm mt-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900">Nos Auteurs</h1>
+            <h1 className="text-3xl font-bold text-gray-900 recoleta">Nos auteurs</h1>
             <p className="mt-4 text-lg text-gray-600">
               Découvrez les chercheurs et leurs contributions à la science
             </p>
           </div>
 
-          {/* Barre de recherche et filtres */}
           <div className="mt-8 space-y-4">
             <form
               onSubmit={handleSearch}
@@ -150,7 +149,6 @@ export function AuthorsList() {
               </button>
             </form>
 
-            {/* Filtres étendus */}
             {showFilters && (
               <div className="bg-white border border-gray-200 rounded-lg p-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -214,11 +212,10 @@ export function AuthorsList() {
         </div>
       </div>
 
-      {/* Statistiques globales */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-lg shadow p-6 mb-8">
           <div className="text-center">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
+            <h3 className="text-lg font-medium text-gray-900 mb-4 recoleta">
               Statistiques de la plateforme
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -252,7 +249,7 @@ export function AuthorsList() {
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <Loader2 className="animate-spin text-slate-500"/>
+            <Loader2 className="animate-spin text-slate-500" />
           </div>
         ) : authors.length === 0 ? (
           <div className="text-center py-12">
@@ -268,73 +265,8 @@ export function AuthorsList() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               {authors.map((author) => (
-                <div
-                  key={author.id}
-                  className="bg-white rounded-md shadow hover:shadow-sm transition-shadow"
-                >
-                  <div className="p-6">
-                    <Avatar
-                      name={getFullName(author)}
-                      tagline={author.affiliation}
-                      href={`/authors/${author.id}`}
-                    />
-
-                    {author.bio && (
-                      <p className="text-gray-700 text-sm my-4  line-clamp-3">
-                        {author.bio}
-                      </p>
-                    )}
-
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div className="text-center">
-                        <div className="flex items-center justify-center text-blue-600 mb-1">
-                          <BookOpen className="w-4 h-4 mr-1" />
-                          <span className="font-semibold">
-                            {author.stats.totalArticles}
-                          </span>
-                        </div>
-                        <div className="text-xs text-gray-600">Articles</div>
-                      </div>
-
-                      <div className="text-center">
-                        <div className="flex items-center justify-center text-green-600 mb-1">
-                          <Eye className="w-4 h-4 mr-1" />
-                          <span className="font-semibold">
-                            {author.stats.totalViews}
-                          </span>
-                        </div>
-                        <div className="text-xs text-gray-600">Vues</div>
-                      </div>
-
-                      <div className="text-center">
-                        <div className="flex items-center justify-center text-purple-600 mb-1">
-                          <Quote className="w-4 h-4 mr-1" />
-                          <span className="font-semibold">
-                            {author.stats.totalCitations}
-                          </span>
-                        </div>
-                        <div className="text-xs text-gray-600">Citations</div>
-                      </div>
-
-                      <div className="text-center">
-                        <div className="flex items-center justify-center text-orange-600 mb-1">
-                          <Award className="w-4 h-4 mr-1" />
-                          <span className="font-semibold">
-                            {author.stats.hIndex}
-                          </span>
-                        </div>
-                        <div className="text-xs text-gray-600">H-Index</div>
-                      </div>
-                    </div>
-
-                    {/* Bouton voir le profil */}
-                    <Link
-                      href={`/authors/${author.id}`}
-                      className="w-full inline-flex items-center justify-center px-4 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition-colors"
-                    >
-                      Voir le profil
-                    </Link>
-                  </div>
+                <div key={author.id}>
+                  <AuthorCard author={author} />
                 </div>
               ))}
             </div>
@@ -412,6 +344,86 @@ export function AuthorsList() {
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+export function AuthorCard({ author }: { author: Author }) {
+  return (
+    <div className="bg-white rounded-md shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+      <div className="border-b border-b-slate-300 px-6 py-4 flex items-center gap-4">
+        <Avatar
+          name={getFullName(author)}
+          tagline={author.affiliation}
+          href={`/authors/${author.id}`}
+        />
+      </div>
+
+      <div className="flex-1 px-6 py-4">
+        {author.bio && (
+          <p className="text-gray-700 text-sm mb-6 line-clamp-3">
+            {author.bio}
+          </p>
+        )}
+
+        <div className="grid grid-cols-2 gap-4">
+          <Stat
+            icon={<BookOpen className="w-4 h-4 mr-1" />}
+            value={author.stats.totalArticles}
+            label="Articles"
+            color="text-blue-600"
+          />
+          <Stat
+            icon={<Eye className="w-4 h-4 mr-1" />}
+            value={author.stats.totalViews}
+            label="Vues"
+            color="text-green-600"
+          />
+          <Stat
+            icon={<Quote className="w-4 h-4 mr-1" />}
+            value={author.stats.totalCitations}
+            label="Citations"
+            color="text-purple-600"
+          />
+          <Stat
+            icon={<Award className="w-4 h-4 mr-1" />}
+            value={author.stats.hIndex}
+            label="H-Index"
+            color="text-orange-600"
+          />
+        </div>
+      </div>
+
+      <div className="border-t border-t-slate-400 px-6 py-4">
+        <Link
+          href={`/authors/${author.id}`}
+          className="w-full inline-flex items-center justify-center px-4 py-2 border rounded-full text-sm"
+        >
+          Voir le profil
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+function Stat({
+  icon,
+  value,
+  label,
+  color,
+}: {
+  icon: React.ReactNode;
+  value: number;
+  label: string;
+  color: string;
+}) {
+  return (
+    <div className="text-center">
+      <div className={`flex items-center justify-center ${color} mb-1`}>
+        {icon}
+        <span className="font-semibold">{value}</span>
+      </div>
+      <div className="text-xs text-gray-600">{label}</div>
     </div>
   );
 }

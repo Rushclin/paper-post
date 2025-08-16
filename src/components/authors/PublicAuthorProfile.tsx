@@ -13,36 +13,9 @@ import {
   TrendingUp,
   Calendar,
   Users,
-  Award
 } from "lucide-react";
 import { formatDate } from "@/src/utils/articleHelpers";
-
-interface Author {
-  id: string;
-  firstName: string;
-  lastName: string;
-  title?: string;
-  affiliation?: string;
-  department?: string;
-  bio?: string;
-  orcid?: string;
-  createdAt: string;
-}
-
-interface Article {
-  id: string;
-  title: string;
-  abstract: string;
-  publishedAt: string;
-  category: {
-    name: string;
-    slug: string;
-  };
-  _count: {
-    views: number;
-    citations: number;
-  };
-}
+import { Article, Author } from "@/src/types/articles";
 
 interface AuthorStats {
   totalArticles: number;
@@ -138,7 +111,7 @@ export function PublicAuthorProfile({ authorId }: PublicAuthorProfileProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 mt-32">
       {/* Header du profil */}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -186,7 +159,7 @@ export function PublicAuthorProfile({ authorId }: PublicAuthorProfileProps) {
 
                 <div className="flex items-center text-gray-600">
                   <Calendar className="w-5 h-5 mr-2" />
-                  <span>Membre depuis {formatDate(author.createdAt)}</span>
+                  <span>Membre depuis {formatDate(author.createdAt!)}</span>
                 </div>
               </div>
 
@@ -366,7 +339,7 @@ export function PublicAuthorProfile({ authorId }: PublicAuthorProfileProps) {
                         <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
                           {article.category.name}
                         </span>
-                        <span>{formatDate(article.publishedAt)}</span>
+                        <span>{formatDate(article.publishedAt!)}</span>
                       </div>
                     </div>
                   </div>
@@ -379,11 +352,11 @@ export function PublicAuthorProfile({ authorId }: PublicAuthorProfileProps) {
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <div className="flex items-center">
                         <Eye className="w-4 h-4 mr-1" />
-                        {article._count.views} vues
+                        {article?._count?.views} vues
                       </div>
                       <div className="flex items-center">
                         <Quote className="w-4 h-4 mr-1" />
-                        {article._count.citations} citations
+                        {article?._count?.citations} citations
                       </div>
                     </div>
                     

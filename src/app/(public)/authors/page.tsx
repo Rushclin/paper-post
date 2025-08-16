@@ -1,11 +1,26 @@
-import { AuthorsList } from "@/src/components/authors/AuthorsList";
 import { Metadata } from "next";
+import { AuthorsList } from "@/src/components/authors/AuthorsList";
 
-export const metadata: Metadata = {
-  title: "Nos Auteurs - Plateforme Scientifique",
-  description: "Découvrez nos auteurs et chercheurs, leurs publications et contributions à la science.",
-};
+async function getAuthors() {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
-export default function AuthorsPage() {
+  const res = await fetch(`${baseUrl}/api/public/authors`, {
+    cache: "no-store", // ou "force-cache" selon ton besoin
+  });
+  return await res.json();
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const res = await getAuthors();
+  const count = res.authors.length;
+
+  return {
+    title: `Nos Auteurs (${count}) - Plateforme Scientifique`,
+    description:
+      "Découvrez nos auteurs et chercheurs, leurs publications et contributions à la science.",
+  };
+}
+
+export default async function AuthorsPage() {
   return <AuthorsList />;
 }
