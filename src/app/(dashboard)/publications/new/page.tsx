@@ -1,13 +1,13 @@
-// app/(dashboard)/publications/new/page.tsx
 "use client";
 
 import { useRouter } from "next/navigation";
 import ArticleForm from "@/src/components/articles/ArticleForm";
+import { ArticleFormData } from "@/src/types/articles";
 
-function NewArticleContent() {
+const NewArticlePage = () => {
   const router = useRouter();
 
-  const handleSubmit = async (data: any, isDraft: boolean) => {
+  const handleSubmit = async (data: ArticleFormData, isDraft: boolean) => {
     try {
       const token = localStorage.getItem("auth-token");
       const response = await fetch("/api/articles", {
@@ -57,6 +57,8 @@ function NewArticleContent() {
   );
 }
 
-export default function NewArticlePage() {
-  return <NewArticleContent />;
-}
+export default NewArticlePage;
+
+// export default function NewArticlePage() {
+//   return <NewArticleContent />;
+// }

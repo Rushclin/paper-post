@@ -1,8 +1,7 @@
 "use client"
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { LaTeXEditor } from "@/src/components/common/LaTeXEditor";
 import {
   formatDate,
   generateCitation,
@@ -208,11 +207,11 @@ export default function PublicArticlePage({
           <section className="mb-8">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Résumé</h2>
             <div className="prose max-w-none">
-              <p className="text-gray-700 leading-relaxed text-justify">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {article.abstract}
-                </ReactMarkdown>
-              </p>
+              <LaTeXEditor
+                value={article.abstract}
+                mode="view"
+                className="text-gray-700 leading-relaxed"
+              />
             </div>
           </section>
 
@@ -237,11 +236,11 @@ export default function PublicArticlePage({
               Article complet
             </h2>
             <div className="prose max-w-none">
-              <div className="prose prose-lg max-w-none">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {article.content}
-                </ReactMarkdown>
-              </div>
+              <LaTeXEditor
+                value={article.content}
+                mode="view"
+                className="prose prose-lg max-w-none"
+              />
             </div>
           </section>
 

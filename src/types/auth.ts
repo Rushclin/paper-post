@@ -1,5 +1,3 @@
-// types/auth.ts
-
 import { UserRole } from '@prisma/client'
 
 export interface LoginFormData {
@@ -66,43 +64,6 @@ export interface JWTPayload {
   iat?: number
   exp?: number
 }
-
-// ================================
-// TYPES POUR LES ARTICLES
-// ================================
-
-export interface CreateArticleData {
-  title: string
-  abstract: string
-  content?: string
-  keywords: string[]
-  categoryId: string
-  coAuthors?: {
-    authorId: string
-    order: number
-    isCorresponding: boolean
-  }[]
-  manuscriptFile?: File
-  supplementaryFiles?: File[]
-}
-
-export interface ArticleFormData {
-  title: string
-  abstract: string
-  content: string
-  keywords: string
-  categoryId: string
-  language: string
-  coAuthorEmails: string
-  ethicsStatement: string
-  conflictOfInterest: string
-  coverLetter: string
-}
-
-// ================================
-// TYPES POUR LA VALIDATION
-// ================================
-
 export interface ValidationError {
   field: string
   message: string
