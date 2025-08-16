@@ -5,38 +5,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { ArticleStatus } from "@prisma/client";
-import { Plus } from "lucide-react";
-
-interface Article {
-  id: string;
-  title: string;
-  abstract: string;
-  status: ArticleStatus;
-  createdAt: string;
-  updatedAt: string;
-  submittedAt?: string;
-  publishedAt?: string;
-  keywords: string[];
-  category: {
-    id: string;
-    name: string;
-    slug: string;
-  };
-  coAuthors: {
-    id: string;
-    order: number;
-    author: {
-      id: string;
-      firstName: string;
-      lastName: string;
-      email: string;
-    };
-  }[];
-  _count: {
-    reviews: number;
-    submissions: number;
-  };
-}
+import { Loader2, Plus } from "lucide-react";
+import { Article } from "@/src/types/articles";
+import { DataTable } from "@/src/components/common/Datatable";
+import { formatDate } from "@/src/utils/articleHelpers";
 
 interface ArticlesResponse {
   success: boolean;
@@ -208,7 +180,6 @@ function ArticlesListContent() {
   const getActionButtons = (article: Article) => {
     const buttons = [];
 
-    // Voir l'article
     buttons.push(
       <Link
         key="view"
@@ -264,15 +235,13 @@ function ArticlesListContent() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <span className="ml-2 text-gray-600">Chargement...</span>
+        <Loader2 className="animate-spin text-slate-500" />
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Mes publications</h1>
@@ -289,7 +258,6 @@ function ArticlesListContent() {
         </Link>
       </div>
 
-      {/* Filtres */}
       <div className="bg-white rounded-lg border p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
@@ -366,7 +334,7 @@ function ArticlesListContent() {
             href="/publications/new"
             className="border px-6 py-3 rounded-full inline-flex items-center"
           >
-            <Plus className="h-4 w-4 mr-3"/>
+            <Plus className="h-4 w-4 mr-3" />
             Créer ma première publication
           </Link>
         </div>
@@ -573,6 +541,66 @@ function ArticlesListContent() {
           )}
         </div>
       )}
+
+      <DataTable<Article>
+        endpoint="articles"
+        columns={[
+          {
+            header: "Titre",
+            render: (a) => (
+              <div className="max-w-xs">
+                <div className="text-sm font-medium text-gray-900 truncate">
+                  {a.title.substring(0, 100)}
+                </div>
+                <div className="text-sm text-gray-500 truncate">
+                  {a.abstract.substring(0, 100)}...
+                </div>
+              </div>
+            ),
+          },
+          {
+            header: "Co auteur-s",
+            render: (a) => (
+              <div className="text-sm text-gray-900">
+                {a.coAuthors.length === 0 ? (
+                  <span className="text-gray-500">Aucun</span>
+                ) : (
+                  <div>
+                    {a.coAuthors.slice(0, 2).map((coAuthor) => (
+                      <div key={coAuthor.id} className="text-xs">
+                        {coAuthor.author.firstName} {coAuthor.author.lastName}
+                      </div>
+                    ))}
+                    {a.coAuthors.length > 2 && (
+                      <div className="text-xs text-gray-500">
+                        +{a.coAuthors.length - 2} autres
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ),
+          },
+          {
+            header: "Statut",
+            render: (a: any) => getStatusBadge(a.status),
+          },
+          {
+            header: "Catégorie",
+            render: (a) => <>{a.category.name}</>,
+          },
+          {
+            header: "Modifié",
+            render: (a) => formatDate(a.createdAt),
+          },
+          {
+            header: "Actions",
+            render: (a) => (
+              <div className="flex space-x-2">{getActionButtons(a)}</div>
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }
