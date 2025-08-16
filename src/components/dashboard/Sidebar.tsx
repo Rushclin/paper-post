@@ -132,7 +132,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ className }) => {
         className
       )}
     >
-      <Logo className="w-full border-b border-slate-100 p-2 text-center text-sm md:p-10 md:text-xl" />
+      <div className="w-full border-b border-slate-100 p-2 text-center text-sm md:p-10 md:text-xl">
+        <Logo />
+      </div>
       <div className="overflow-auto px-2 md:px-4 xl:px-6">
         <div className="items mt-10 space-y-5">
           <SidebarItem

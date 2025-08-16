@@ -78,7 +78,9 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ title, subtitl
   return (
     <div className="w-full py-0">
       <div className="fixed z-[1000] flex w-full items-center justify-between gap-10 bg-white px-4 md:hidden">
-        <Logo className="inline-flex w-fit border-b border-slate-100 p-2 py-2 pb-6 text-center text-sm md:p-10 md:text-xl" />
+        <div className="inline-flex w-fit border-b border-slate-100 p-2 py-2 pb-6 text-center text-sm md:p-10 md:text-xl">
+          <Logo />
+        </div>
         <div className="flex h-full items-center gap-2">
           <UserProfile user={user} hideName />
         </div>

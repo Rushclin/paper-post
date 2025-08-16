@@ -1,7 +1,5 @@
-// lib/validation.ts
 import { z } from 'zod'
 import { USER_ROLES } from '../types/auth'
-// import { USER_ROLES } from '@/types/auth'
 
 export const loginSchema = z.object({
   email: z.string()

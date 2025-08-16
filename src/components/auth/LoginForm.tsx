@@ -1,9 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { LoginFormData, AuthResponse } from '@/src/types/auth'
+import { useLoginValidation } from '@/src/hooks/useAuthValidation'
+import toast from 'react-hot-toast'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -15,9 +17,34 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [needsVerification, setNeedsVerification] = useState(false)
+  const { validateField, validateAll, hasError, getError, isValid } = useLoginValidation()
+  const [formTouched, setFormTouched] = useState({ email: false, password: false })
+
+  // Validation en temps réel quand les champs changent
+  useEffect(() => {
+    if (formTouched.email || formTouched.password) {
+      validateAll(formData)
+    }
+  }, [formData, validateAll, formTouched])
+
+  const handleInputChange = (field: keyof LoginFormData, value: string | boolean) => {
+    setFormData({ ...formData, [field]: value })
+    setFormTouched({ ...formTouched, [field]: true })
+    
+    // Validation en temps réel
+    validateField(field, value)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Valider le formulaire complet
+    const validation = validateAll(formData)
+    if (!validation.isValid) {
+      setFormTouched({ email: true, password: true })
+      return
+    }
+
     setLoading(true)
     setError('')
     setNeedsVerification(false)
@@ -38,11 +65,9 @@ export default function LoginForm() {
         if (data.token) {
           localStorage.setItem('auth-token', data.token)
         }
-        alert("Bonjour")
+        toast.success("Vous êtes connecté")
         
-        // Rediriger vers le dashboard
         router.push('/publications')
-        alert("Bonjour")
       } else {
         setError(data.message)
         if ('needsVerification' in data) {
@@ -129,10 +154,17 @@ export default function LoginForm() {
                 autoComplete="email"
                 required
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="mt-1 relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                className={`mt-1 relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-md focus:outline-none sm:text-sm ${
+                  hasError('email') && formTouched.email
+                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                    : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                }`}
                 placeholder="votre@email.com"
               />
+              {hasError('email') && formTouched.email && (
+                <p className="mt-1 text-sm text-red-600">{getError('email')}</p>
+              )}
             </div>
 
             <div>
@@ -146,10 +178,17 @@ export default function LoginForm() {
                 autoComplete="current-password"
                 required
                 value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="mt-1 relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                onChange={(e) => handleInputChange('password', e.target.value)}
+                className={`mt-1 relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-md focus:outline-none sm:text-sm ${
+                  hasError('password') && formTouched.password
+                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                    : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                }`}
                 placeholder="Votre mot de passe"
               />
+              {hasError('password') && formTouched.password && (
+                <p className="mt-1 text-sm text-red-600">{getError('password')}</p>
+              )}
             </div>
           </div>
 
@@ -160,7 +199,7 @@ export default function LoginForm() {
                 name="remember-me"
                 type="checkbox"
                 checked={formData.rememberMe}
-                onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })}
+                onChange={(e) => handleInputChange('rememberMe', e.target.checked)}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
@@ -178,7 +217,7 @@ export default function LoginForm() {
           <div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !isValid || !formData.email || !formData.password}
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (

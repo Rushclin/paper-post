@@ -1,13 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { RegisterFormData, AuthResponse } from '@/src/types/auth'
-import { USER_ROLES, RESEARCH_INTERESTS, ACADEMIC_TITLES } from '@/src/types/auth'
+import { USER_ROLES, ACADEMIC_TITLES } from '@/src/types/auth'
+import { useCategories } from '@/src/hooks/useCategories'
+import { useRegisterValidation } from '@/src/hooks/useAuthValidation'
+import toast from 'react-hot-toast'
 
 export default function RegisterForm() {
-  const router = useRouter()
+  const {categories} = useCategories();
   const [formData, setFormData] = useState<RegisterFormData>({
     email: '',
     password: '',
@@ -26,9 +28,44 @@ export default function RegisterForm() {
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string[]>>({})
   const [success, setSuccess] = useState(false)
+  const { validateField, validateAll, hasError, getError, isValid } = useRegisterValidation()
+  const [formTouched, setFormTouched] = useState<Record<string, boolean>>({})
+  // Validation en temps réel quand les champs changent
+  useEffect(() => {
+    if (Object.keys(formTouched).length > 0) {
+      validateAll(formData)
+    }
+  }, [formData, validateAll, formTouched])
+
+  const handleInputChange = (field: keyof RegisterFormData, value: string | boolean | string[]) => {
+    const newFormData = { ...formData, [field]: value }
+    setFormData(newFormData)
+    setFormTouched({ ...formTouched, [field]: true })
+    
+    // Validation en temps réel avec toutes les données pour les règles inter-champs
+    validateField(field, value, newFormData)
+    
+    // Si on modifie le password, re-valider confirmPassword s'il est touché
+    if (field === 'password' && formTouched.confirmPassword) {
+      validateField('confirmPassword', newFormData.confirmPassword, newFormData)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Valider le formulaire complet
+    const validation = validateAll(formData)
+    if (!validation.isValid) {
+      // Marquer tous les champs comme touchés pour afficher les erreurs
+      const allFieldsTouched = Object.keys(formData).reduce((acc, field) => {
+        acc[field] = true
+        return acc
+      }, {} as Record<string, boolean>)
+      setFormTouched(allFieldsTouched)
+      return
+    }
+
     setLoading(true)
     setErrors({})
 
@@ -45,6 +82,7 @@ export default function RegisterForm() {
 
       if (data.success) {
         setSuccess(true)
+        toast.success("Votre compte a été crée")
       } else {
         if (data.errors) {
           setErrors(data.errors)
@@ -141,9 +179,16 @@ export default function RegisterForm() {
                   type="text"
                   required
                   value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none sm:text-sm ${
+                    hasError('firstName') && formTouched.firstName
+                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  }`}
                 />
+                {hasError('firstName') && formTouched.firstName && (
+                  <p className="mt-1 text-sm text-red-600">{getError('firstName')}</p>
+                )}
                 {errors.firstName && (
                   <p className="mt-1 text-sm text-red-600">{errors.firstName[0]}</p>
                 )}
@@ -158,9 +203,16 @@ export default function RegisterForm() {
                   type="text"
                   required
                   value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none sm:text-sm ${
+                    hasError('lastName') && formTouched.lastName
+                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  }`}
                 />
+                {hasError('lastName') && formTouched.lastName && (
+                  <p className="mt-1 text-sm text-red-600">{getError('lastName')}</p>
+                )}
                 {errors.lastName && (
                   <p className="mt-1 text-sm text-red-600">{errors.lastName[0]}</p>
                 )}
@@ -210,9 +262,16 @@ export default function RegisterForm() {
                 type="email"
                 required
                 value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none sm:text-sm ${
+                  hasError('email') && formTouched.email
+                    ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                    : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                }`}
               />
+              {hasError('email') && formTouched.email && (
+                <p className="mt-1 text-sm text-red-600">{getError('email')}</p>
+              )}
               {errors.email && (
                 <p className="mt-1 text-sm text-red-600">{errors.email[0]}</p>
               )}
@@ -233,9 +292,16 @@ export default function RegisterForm() {
                   type="password"
                   required
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  onChange={(e) => handleInputChange('password', e.target.value)}
+                  className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none sm:text-sm ${
+                    hasError('password') && formTouched.password
+                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  }`}
                 />
+                {hasError('password') && formTouched.password && (
+                  <p className="mt-1 text-sm text-red-600">{getError('password')}</p>
+                )}
                 {errors.password && (
                   <p className="mt-1 text-sm text-red-600">{errors.password[0]}</p>
                 )}
@@ -250,9 +316,16 @@ export default function RegisterForm() {
                   type="password"
                   required
                   value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                  className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none sm:text-sm ${
+                    hasError('confirmPassword') && formTouched.confirmPassword
+                      ? 'border-red-300 focus:ring-red-500 focus:border-red-500'
+                      : 'border-gray-300 focus:ring-blue-500 focus:border-blue-500'
+                  }`}
                 />
+                {hasError('confirmPassword') && formTouched.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-600">{getError('confirmPassword')}</p>
+                )}
                 {errors.confirmPassword && (
                   <p className="mt-1 text-sm text-red-600">{errors.confirmPassword[0]}</p>
                 )}
@@ -260,7 +333,6 @@ export default function RegisterForm() {
             </div>
           </div>
 
-          {/* Informations académiques */}
           <div className="bg-white shadow rounded-lg p-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Informations académiques</h3>
             
@@ -330,15 +402,15 @@ export default function RegisterForm() {
                   Domaines de recherche * (sélectionnez au moins un)
                 </label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {RESEARCH_INTERESTS.map(interest => (
-                    <label key={interest} className="inline-flex items-center">
+                  {categories.map(interest => (
+                    <label key={interest.id} className="inline-flex items-center">
                       <input
                         type="checkbox"
-                        checked={formData.researchInterests.includes(interest)}
-                        onChange={() => handleInterestToggle(interest)}
+                        checked={formData.researchInterests.includes(interest.name)}
+                        onChange={() => handleInterestToggle(interest.name)}
                         className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
                       />
-                      <span className="ml-2 text-sm text-gray-700">{interest}</span>
+                      <span className="ml-2 text-sm text-gray-700">{interest.name}</span>
                     </label>
                   ))}
                 </div>
@@ -356,7 +428,7 @@ export default function RegisterForm() {
                 id="acceptTerms"
                 type="checkbox"
                 checked={formData.acceptTerms}
-                onChange={(e) => setFormData({ ...formData, acceptTerms: e.target.checked })}
+                onChange={(e) => handleInputChange('acceptTerms', e.target.checked)}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <label htmlFor="acceptTerms" className="ml-2 block text-sm text-gray-700">
@@ -371,6 +443,9 @@ export default function RegisterForm() {
                 {' '}*
               </label>
             </div>
+            {hasError('acceptTerms') && formTouched.acceptTerms && (
+              <p className="mt-1 text-sm text-red-600">{getError('acceptTerms')}</p>
+            )}
             {errors.acceptTerms && (
               <p className="mt-1 text-sm text-red-600">{errors.acceptTerms[0]}</p>
             )}
@@ -379,7 +454,7 @@ export default function RegisterForm() {
           <div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !isValid || !formData.email || !formData.password || !formData.firstName || !formData.lastName || !formData.acceptTerms}
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
