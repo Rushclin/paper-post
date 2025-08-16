@@ -1,11 +1,11 @@
-// components/articles/ArticleForm.tsx
 "use client";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArticleFormData } from "@/src/types/articles";
-import { LaTeXEditor } from "@/src/components/common/LaTeXEditor";
+import dynamic from "next/dynamic";
 
+const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 interface ArticleFormProps {
   initialData?: Partial<ArticleFormData>;
@@ -216,11 +216,13 @@ export default function ArticleForm({
               >
                 Résumé *
               </label>
-              <LaTeXEditor
+              <textarea
+                id="abstract"
+                rows={6}
                 value={formData.abstract}
-                onChange={(value) => handleInputChange("abstract", value || "")}
-                height={200}
-                placeholder="Rédigez le résumé de votre article ici...\n\nVous pouvez utiliser du **Markdown** et des équations $\\LaTeX$ comme $E = mc^2$"
+                onChange={(e) => handleInputChange("abstract", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Résumé structuré de votre article (contexte, objectifs, méthodes, résultats, conclusions)"
               />
               {errors.abstract && (
                 <p className="mt-1 text-sm text-red-600">
@@ -239,13 +241,11 @@ export default function ArticleForm({
               >
                 Contenu de l'article *
               </label>
-              
-              
-              <LaTeXEditor
+
+              <MDEditor
                 value={formData.content}
                 onChange={(value) => handleInputChange("content", value || "")}
-                height={500}
-                placeholder="# Titre de votre article\n\n## Introduction\n\nRédigez le contenu de votre article ici...\n\n**Formatage supporté:**\n- Markdown standard\n- Équations LaTeX: $\\sum_{i=1}^n x_i$\n- Blocs d'équations:\n\n$$\n\\int_{-\\infty}^{\\infty} e^{-x^2} dx = \\sqrt{\\pi}\n$$\n\n## Méthodologie\n\n## Résultats\n\n## Conclusion"
+                height={400}
               />
               {errors.content && (
                 <p className="mt-1 text-sm text-red-600">{errors.content[0]}</p>

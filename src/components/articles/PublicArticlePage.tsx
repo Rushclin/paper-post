@@ -1,7 +1,6 @@
-"use client"
+"use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { LaTeXEditor } from "@/src/components/common/LaTeXEditor";
 import {
   formatDate,
   generateCitation,
@@ -11,6 +10,8 @@ import {
 import { Avatar } from "@/src/components/common/Avatar";
 import { Article } from "@/src/types/articles";
 import { CloudDownload, Loader2Icon, Share2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 export default function PublicArticlePage({
   articleId,
@@ -37,13 +38,13 @@ export default function PublicArticlePage({
   const trackView = async () => {
     try {
       await fetch(`/api/articles/${articleId}/view`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json'
-        }
+          "Content-Type": "application/json",
+        },
       });
     } catch (error) {
-      console.error('Erreur lors du tracking de la vue:', error);
+      console.error("Erreur lors du tracking de la vue:", error);
     }
   };
 
@@ -207,11 +208,11 @@ export default function PublicArticlePage({
           <section className="mb-8">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Résumé</h2>
             <div className="prose max-w-none">
-              <LaTeXEditor
-                value={article.abstract}
-                mode="view"
-                className="text-gray-700 leading-relaxed"
-              />
+              <p className="text-gray-700 leading-relaxed text-justify">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {article.abstract}
+                </ReactMarkdown>
+              </p>
             </div>
           </section>
 
@@ -236,11 +237,11 @@ export default function PublicArticlePage({
               Article complet
             </h2>
             <div className="prose max-w-none">
-              <LaTeXEditor
-                value={article.content}
-                mode="view"
-                className="prose prose-lg max-w-none"
-              />
+              <p className="text-gray-700 leading-relaxed text-justify">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {article.abstract}
+                </ReactMarkdown>
+              </p>
             </div>
           </section>
 
@@ -267,19 +268,24 @@ export default function PublicArticlePage({
                 onClick={async () => {
                   try {
                     await fetch(`/api/articles/${articleId}/cite`, {
-                      method: 'POST',
+                      method: "POST",
                       headers: {
-                        'Content-Type': 'application/json'
+                        "Content-Type": "application/json",
                       },
-                      body: JSON.stringify({ format: citationFormat.toUpperCase() })
+                      body: JSON.stringify({
+                        format: citationFormat.toUpperCase(),
+                      }),
                     });
-                    
+
                     navigator.clipboard.writeText(
                       generateCitation(article, citationFormat)
                     );
                     alert("Citation copiée!");
                   } catch (error) {
-                    console.error('Erreur lors du tracking de la citation:', error);
+                    console.error(
+                      "Erreur lors du tracking de la citation:",
+                      error
+                    );
                     navigator.clipboard.writeText(
                       generateCitation(article, citationFormat)
                     );
